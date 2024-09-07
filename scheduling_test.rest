@@ -1,0 +1,154 @@
+POST http://127.0.0.1:8000/tutor/createSlot
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+{
+    "hour": 8,
+    "day": 10,
+    "month": 9
+}
+
+### this function allows the tutor to create a new slot available for user to book
+### provide the hour day and month wanted (the month will either be the current month or the next one since we only want 
+### a difference of 1 month between the first and last booking available
+
+GET http://127.0.0.1:8000/tutor/getHours
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### will provide all the hours of the tutor from now till a month from now
+### when no optional argument is given all the hours of the tutor are provided
+
+GET http://127.0.0.1:8000/tutor/getHours?booked_only=True
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### booked_only parameter return only the slots which are booked or exclusively the ones that are available
+### =True provides only the booked slots of the tutor
+
+GET http://127.0.0.1:8000/tutor/getHours?booked_only=False
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### same implementation but provides the available hours
+### this api usecase is very similar to user/getAvailableHours
+### but using booked_only=False no need to provide tutor_id, the user will be provided with his only bookings in addition to the user ids booking them
+
+GET http://127.0.0.1:8000/tutor/getFullyBookedDays
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### this api provides the tutor's days which are fully booked
+### this only returns the fully booked days
+
+GET http://127.0.0.1:8000/tutor/getBookedDays
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### this api provides the tutor's booked and empty days as true or false booleans same as the user's iteration getBookedDays
+### this api requires tutor authentication
+
+PUT http://127.0.0.1:8000/user/bookSlot
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+{
+    "booking_id": 5,
+    "course_id": 2
+}
+
+### provide the booking id given by the get functions below and this slot will be booked by the user
+### no email confirmation for now
+### you need to get the course_id by filtering the courses of the tutor chosen
+
+GET http://127.0.0.1:8000/user/getHours?tutor_id=1
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### will provide the all hours of a specific tutor from now till a month from now
+
+GET http://127.0.0.1:8000/user/getHours?booked_only=True&tutor_id=1
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### will provide the unavailable hours from now till a month from now
+### the user details will be null even if the someone booked this session
+### this is a safety feature since these apis are called by regular users and not tutors
+
+
+GET http://127.0.0.1:8000/user/getHours?booked_only=False&tutor_id=1
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### will provide the available hours from now till a month from now
+
+GET http://127.0.0.1:8000/user/getBookings
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### this api provides the bookings that the user made
+### you can get the tutor's info of each reservation with this api call as well
+### the tutor's info isn't usually available since we need the tutor's id to access the hours in the other apis
+
+GET http://127.0.0.1:8000/user/getBookedDays?tutor_id=1
+Authorization: Token 34002423292d35f8f655832d3aab1c9e010480c5
+Content-Type: application/json
+
+### returns the booked and empty days of a tutor whose id is provided with boolean values
+
+GET http://127.0.0.1:8000/user/getMyBookedDays
+Authorization: Token 34002423292d35f8f655832d3aab1c9e010480c5
+Content-Type: application/json
+
+### returns a list of all the days with booked slots by the user
+
+### PUT Requests
+DELETE  http://127.0.0.1:8000/user/cancelBooking?booking_id=47
+Authorization: Token 52791df474fce0b7e121b3b7b18afc9ae7dd997a
+Content-Type: application/json
+
+### when you provide the booking id the user cancels his reservation with the tutor
+### you can get the list of the user's reservations by using the user/getBookings api
+
+DELETE  http://127.0.0.1:8000/tutor/cancelBooking?booking_id=5
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### provide the id of the booking slot which is already booked by the user 
+### the slot will then be available for another user to book it
+### if the slot isn't already booked, error handling is made to provide you with the problem
+
+DELETE http://127.0.0.1:8000/tutor/deleteSlot?booking_id=46
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Content-Type: application/json
+
+### this api will delete the slot not only cancel the appointment
+
+GET http://127.0.0.1:8000/user/getPendingRequests
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### this get request returns the user's list of pending requests formatted with the tutor's name and start time
+
+GET http://127.0.0.1:8000/tutor/getPendingRequests
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### this get request returns the tutor's list of pending requests formatted with the users' names and start time
+
+
+GET http://127.0.0.1:8000/tutor/confirmBooking?booking_id=5&user_id=2&course_id=2
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### doesn't really matter the request type this api will return an html page
+### confirms the booking by the tutor same as the link sent on email
+### use the tutor/pendingRequests to get the pending requests with their appropriate tutor names and courses
+### you can get the user_id and booking_id from the above tutor/getPendingRequests api
+
+GET http://127.0.0.1:8000/tutor/checkBookingStatus?booking_id=2
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Content-Type: application/json
+
+### run before deleting a slot to find out if it has bookings or pending requests first
+### returns whether there is pending slots or bookings

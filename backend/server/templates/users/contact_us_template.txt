@@ -1,0 +1,7 @@
+You have received a new message from the Contact Us form:
+
+Name: {{ user_name }}
+Email: {{ user_email }}
+Message:
+
+{{ message_content }}

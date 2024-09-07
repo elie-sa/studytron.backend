@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+</head>
+<body>
+    <style>
+        body {
+            background-color: rgba(0, 172, 151, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: "Open Sans", sans-serif;
+            padding: 40px;
+            box-sizing: border-box;
+            margin: 0;
+        }
+        
+        .email-confirmation--container {
+            text-align: center;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .extra-icon {
+            color: rgb(0, 172, 151);
+            font-size: 4rem;
+        }
+
+        .confirmation-button {
+            background-color: rgb(0, 172, 151);
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            font-family: "Open Sans", sans-serif;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+        
+        .confirmation-button:hover {
+            background-color: rgb(4, 132, 117);
+            cursor: pointer;
+        }
+
+        @media (max-width: 450px) {
+            .email-confirmation--container {
+                padding: 0;
+                box-shadow: none;
+            }
+
+            body {
+                background-color: transparent;
+            }
+        }
+    </style>
+
+    <div class="email-confirmation--container">
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <lord-icon
+            src="https://cdn.lordicon.com/oqdmuxru.json"
+            trigger="hover"
+            colors="primary:#00ac97"
+            style="width:100px;height:100px">
+        </lord-icon>
+        <h1>Thank you for using Studytron!</h1>
+        <p>Your session with {{ user_name }} on {{ session_time }} has been successfully confirmed.</p>
+
+        <a class="confirmation-button" href="http://localhost:3000/Find-Tutor#/tutors">Continue Browsing</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verification</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+    <body>
+        <style>
+            body {
+                background-color: rgba(0, 172, 151, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                font-family: "Open Sans", sans-serif;
+                padding: 40px;
+                box-sizing: border-box;
+                margin: 0;
+            }
+            
+            .email-confirmation--container {
+                text-align: center;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 10px;
+                padding: 40px;
+                box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .extra-icon {
+                color: rgb(0, 172, 151);
+                font-size: 4rem;
+            }
+
+            .confirmation-button {
+                background-color: rgb(0, 172, 151);
+                padding: 10px 20px;
+                color: white;
+                border-radius: 5px;
+                border: none;
+                font-family: "Open Sans", sans-serif;
+                margin-top: 10px;
+            }
+            
+            .confirmation-button:hover {
+                background-color: rgb(4, 132, 117);
+                cursor: pointer;
+            }
+
+            @media (max-width: 450px) {
+                .email-confirmation--container {
+                    padding: 0;
+                    box-shadow: none;
+                }
+
+                body {
+                    background-color: transparent;
+                }
+            }
+        </style>
+
+        <script>
+            document.getElementById("resend-email").addEventListener("click", function() {
+                fetch("{% url 'send_confirmation_email' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': "Token {{ token }}"
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Failed to resend email.");
+                    }
+                })
+                .then(data => {
+                    alert("Verification email has been resent.");
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            });
+        </script>
+
+        {% if is_email_confirmed == True %}
+        <div class="email-confirmation--container">
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon
+                src="https://cdn.lordicon.com/oqdmuxru.json"
+                trigger="hover"
+                colors="primary:#00ac97"
+                style="width:100px;height:100px">
+            </lord-icon>
+            <h1>Welcome to Studytron!</h1>
+            <p>Your email address has been successfully confirmed. Thank you for verifying your email.</p>
+
+            <a class="confirmation-button" href="http://localhost:3000/Find-Tutor#/sign-in">Sign in</a>
+        </div>
+
+        {% else %}
+        <div class="email-confirmation--container">
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon
+                src="https://cdn.lordicon.com/ygvjgdmk.json"
+                trigger="hover"
+                colors="primary:#00ac97"
+                style="width:100px;height:100px">
+            </lord-icon>
+            <h1>Oops, something went wrong!</h1>
+            <p>Your confirmation token has expired. Please request a new one to continue.</p>
+
+            <button class="confirmation-button" id="resend-email">Resend Email</button>
+        </div>
+        {% endif %}
+    </body>
+</html>

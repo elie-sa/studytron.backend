@@ -1,0 +1,218 @@
+POST http://127.0.0.1:8000/signup 
+Content-Type: application/json
+
+{ "username": "elieSawma", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad@lau.edu",
+"is_tutor": true, "description": "I am a tutor model for testing", "taughtCourses": [1,2], "rate": 20 ,"languages": [1], 
+"profile": {"phone_number": "03264748"}}
+
+### this api endpoint allows for signing users up : if the user already has an account
+### it will log him in and send an already found account message - provides authorization token
+### if the user is a tutor the is_tutor boolean should be true and the other variables are required, else we don't need description etc.
+### the profile syntax is made to differentiate the required and optional user info (including profile pic, phone num)
+
+POST http://127.0.0.1:8000/login 
+Content-Type: application/json
+
+{ "login_credential": "testCaseMac@lau.edu", "password": "TestCase1!89"}
+
+### logging in - provides authorization token
+### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown
+### let the user try one or two more confirmations if the first one couldn't be completed
+
+POST http://127.0.0.1:8000/user/sendConfirmationEmail
+Content-Type: application/json
+Authorization: Token 52791df474fce0b7e121b3b7b18afc9ae7dd997a
+
+### used to send the confirmation email
+### this is the manual api if the confirmation didn't work the first time
+### !!!imp: check the console of the backend directory an email will be displayed for testing purposes so that you can access the email
+
+POST http://127.0.0.1:8000/user/forgotPassword
+Content-Type: application/json
+
+{ "email": "elie.sawmaawad@lau.edu"}
+
+### checks the validity of the email provided (if it's found in the database)
+### sends an email with an OTP (one time password) that is inputted into the 
+
+POST http://127.0.0.1:8000/user/verifyOtp
+Content-Type: application/json
+
+{ 
+    "email": "testCaseMac@lau.edu",
+    "otp": "662347"
+}
+
+### if the otp is provided in time (one minute mark) and the otp is correct a success message will be provided
+### after this run the user/changeForgottenPassword
+
+POST http://127.0.0.1:8000/user/changeForgottenPassword
+Content-Type: application/json
+
+{ 
+    "email": "testCaseMac@lau.edu",
+    "new_password": "TestCase1!89"
+}
+
+### after succeeding the user/verifyOtp request, this post request doesn't need authentication and allows a change of passwords
+### security concern: only use this request after otp verification
+### apply the same password requirements as in the sign up page
+
+GET http://127.0.0.1:8000/test_token 
+Content-Type: application/json
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+
+### user token 2f3c7256f079564c5d4890d6929f19b9798c5d4e
+### can provide it with authorization token - used for testing purposes only (might delete later)
+
+GET http://127.0.0.1:8000/user/getInfo
+Content-Type: application/json
+Authorization: Token e6d80a24534358a66df7cbe1220a3955b95d3651
+### can provide it with authorization token - provides the user's information and whether he is a tutor or not etc.
+
+### no need for authentication
+
+GET http://127.0.0.1:8000/getMajors
+### gives a list of all the available majors
+
+GET http://127.0.0.1:8000/getMajor/1
+### gets a course according to the id provided
+
+GET http://127.0.0.1:8000/getCourse/1
+### gets a course according to the id provided
+
+GET http://127.0.0.1:8000/getLanguages
+### get the list of all the languages
+
+GET http://127.0.0.1:8000/getLanguages?search_entry=eng
+### gets the list of all the languages which have the specified search entry
+
+GET http://127.0.0.1:8000/getLanguage/1
+### gets a language according to the id provided
+
+### filtering courses:
+
+### ! by default all courses will appear but if specified filtered = True on query the ones with 0 tutors will not be shown
+
+GET http://127.0.0.1:8000/getCourses
+### by default the page number will be 1
+
+GET http://127.0.0.1:8000/getCourses?page=2
+### no arguments can be provided to get the list of all the courses
+### courses with 0 tutors will appear
+
+GET http://127.0.0.1:8000/getCourses?filtered=True
+### no arguments can be provided to get the list of all the courses
+### courses with 0 tutors will not appear
+
+GET http://127.0.0.1:8000/getCourses?major_id=1&search_entry=ing
+### provide the optional arguments with a question mark
+
+GET http://127.0.0.1:8000/getCourses?major_id=1
+### can provide the major_id alone
+
+GET http://127.0.0.1:8000/getCourses?search_entry=gineering
+### can provide search_entry alone
+### all routes are camelCased but the arguments to be provided are snake cased
+
+
+
+### filtering tutors:
+
+GET http://127.0.0.1:8000/getTutors
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+### gets all the tutors without filtering
+
+GET http://127.0.0.1:8000/getTutors?course_id=2
+### gets all the tutors who teach course of id 2
+
+GET http://127.0.0.1:8000/getTutors?search_entry=ara
+### searches the tutors
+
+GET http://127.0.0.1:8000/getTutors?rate=15
+### gets all the tutors with an hourly rate of 15 or below
+
+GET http://127.0.0.1:8000/getTutors?language_id=4
+### get all the tutors who the speak the language of id 3
+
+GET http://127.0.0.1:8000/getTutors?rating=2
+### get all the tutors who have a rating greater than or equal to 2
+
+GET http://127.0.0.1:8000/getTutors?course_id=2&search_entry=mac&language_id=2&rate=50&rating=2
+### searches using all the possible arguments (any arguments can be combined together)
+
+### rating APIs
+POST http://127.0.0.1:8000/user/rateTutor
+Content-Type: application/json
+Authorization: Token 20d6eac3d351d1fa2469cfd48d04766f8e60b296
+
+{
+    "tutor_id": 4,
+    "rating": 3
+}
+
+### allows the user to rate a tutor by providing the rating and the tutor id
+### can also be used to change the user's rating by providing the same request
+
+DELETE http://127.0.0.1:8000/user/deleteRating
+Content-Type: application/json
+Authorization: Token 20d6eac3d351d1fa2469cfd48d04766f8e60b296
+
+{
+    "tutor_id": 4
+}
+
+### allows the user to delete his/her rating to not be used in the computation of the tutor's rating
+### user authentication and tutor id needed
+
+GET http://127.0.0.1:8000/getTutorRating?tutor_id=4
+Content-Type: application/json
+
+### gets the rating of a specific tutor (is provided in the get info api and other tutor info apis but may be used for a specific use)
+
+GET http://127.0.0.1:8000/user/getRating?tutor_id=4
+Content-Type: application/json
+Authorization: Token 20d6eac3d351d1fa2469cfd48d04766f8e60b296
+
+### this api provides whether the user rated this tutor or not 
+### and if the user did rate previously, the specific rating is provided
+
+POST http://127.0.0.1:8000/user/contactUs
+Content-Type: application/json
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+
+{
+    "subject": "(subject)",
+    "message": "(message)"
+}
+
+### provide the subject and message of the email message
+### the login credentials will be used in the email sent
+
+POST http://127.0.0.1:8000/tutor/banUser
+Content-Type: application/json
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+
+{
+    "user_id": 2
+}
+
+### provide the id of the user you want to ban
+### if the user is already banned an error message will be displayed
+
+POST http://127.0.0.1:8000/tutor/unbanUser
+Content-Type: application/json
+Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+
+{
+    "user_id": 2
+}
+
+### provide the id of the user you want to unban
+### is the user was never banned or was unbanned a message will be displayed
+
+GET http://127.0.0.1:8000/tutor/getBannedUsers
+Content-Type: application/json
+Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+
+### provides a list of all the banned users of the tutor

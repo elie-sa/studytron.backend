@@ -1,0 +1,16 @@
+Dear {{ user_name }},
+
+We regret to inform you that your pending booking request for the following session has been cancelled:
+
+Course: {{ course_name }}
+Scheduled Date & Time: {{ session_time }}
+Tutor: {{ tutor_name }}
+
+Unfortunately, the booking slot is no longer available. We apologize for any inconvenience this may cause.
+
+If you have any questions or need further assistance, please don't hesitate to contact us.
+
+Thank you for your understanding.
+
+Best regards,
+Team Studytron

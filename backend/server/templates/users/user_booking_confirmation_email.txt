@@ -1,0 +1,15 @@
+Dear {{ user_name }},
+
+Your booking with {{ tutor_name }} has been successfully confirmed. Please find the details of your session below:
+
+Date & Time: {{ session_time }}
+Tutor: {{ tutor_name }}
+Tutor's Email: {{ tutor_email }}
+{% if tutor_phone %}Tutor's Phone Number: {{ tutor_phone }}{% endif %}
+Course: {{ course_name }}
+
+Thank you for choosing our services. If you have any questions or need further assistance, feel free to reach out to us.
+
+Best regards,
+Team Studytron
+studytron01@gmail.com

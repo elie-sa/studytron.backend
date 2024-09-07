@@ -1,0 +1,17 @@
+Dear {{ user_name }},
+
+We regret to inform you that your upcoming booking has been canceled by the tutor:
+
+Tutor Name: {{ tutor_name }}
+Course: {{ course_name }}
+Scheduled Date & Time: {{ session_time }}
+
+Please be aware that this session has been cancelled and will not take place as originally planned.
+
+We apologize for any inconvenience this may cause and appreciate your understanding.
+
+Thank you for your cooperation.
+
+Best regards,
+Team Studytron
+

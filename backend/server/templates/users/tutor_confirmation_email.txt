@@ -1,0 +1,20 @@
+Dear {{ tutor_name }},
+
+You have received a new booking request for the course "{{ course_name }}".
+
+Student Information:
+- Name: {{ student_name }}
+- Email: {{ student_email }}
+{% if student_phone %}- Phone Number: {{ student_phone }}{% endif %}
+
+Session Details:
+- Scheduled Time: {{ session_time }}
+
+To confirm this booking, please click the link below:
+[Confirm Booking](http://localhost:8000/tutor/confirmBooking?booking_id={{booking_id}}&user_id={{user_id}}&course_id={{course_id}}&token_id={{token_id}})
+
+Thank you!
+
+Best regards,
+Team Studytron
+studytron01@gmail.com
