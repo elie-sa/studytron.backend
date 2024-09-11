@@ -268,7 +268,6 @@ def list_majors(request):
 def list_courses(request):
     major_id = request.query_params.get('major_id', None)
     search_entry = request.query_params.get('search_entry', None)
-    filtered = request.query_params.get('filtered', False)
     page_number = request.query_params.get('page', 1)
     items_per_page = 10 
 
@@ -278,12 +277,7 @@ def list_courses(request):
     if search_entry:
         query &= Q(name__icontains=search_entry)
     
-    if filtered:
-        courses = Course.objects.filter(query).annotate(
-            num_tutors=Count('courseTutors')
-        ).filter(num_tutors__gt=0).order_by('name')
-    else:
-        courses = Course.objects.filter(query).order_by('name')
+    courses = Course.objects.filter(query).order_by('name')
 
     paginator = Paginator(courses, items_per_page)
     page_obj = paginator.get_page(page_number)
