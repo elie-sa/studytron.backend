@@ -308,6 +308,36 @@ def list_courses(request):
         "courses": course_data,
         "pagination": pagination_info
     })
+
+@api_view(['GET'])
+def list_all_courses(request):
+    major_id = request.query_params.get('major_id', None)
+    search_entry = request.query_params.get('search_entry', None)
+
+    query = Q()
+    if major_id:
+        query &= Q(major_id=major_id)
+    if search_entry:
+        query &= Q(name__icontains=search_entry)
+    
+    courses = Course.objects.filter(query).order_by('name')
+
+    course_data = []
+    for course in courses:
+        major_name = course.major.name
+        course_code = f"{course.major.code}{course.code}"
+        num_tutors = Tutor.objects.filter(taught_courses=course).count()
+
+        course_info = {
+            "id": course.id,
+            "name": course.name,
+            "major": major_name,
+            "code": course_code,
+            "num_tutors": num_tutors
+        }
+        course_data.append(course_info)
+
+    return Response(course_data)
     
 @api_view(['GET'])
 def list_tutors(request):

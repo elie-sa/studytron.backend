@@ -18,6 +18,7 @@ urlpatterns = [
     path('user/getInfo', views.get_user_info, name="get_user_info"),
     path('getMajors/', views.list_majors, name="list_majors"),
     path('getCourses/', views.list_courses, name="list_courses"),
+     path('getAllCourses/', views.list_all_courses, name="list_all_courses"),
     path('getTutors/', views.list_tutors, name="list_tutors"),
     path('getLanguages/', views.list_languages, name="list_languages"),
     path('getLanguage/<int:language_id>', views.get_language, name="get_language"),

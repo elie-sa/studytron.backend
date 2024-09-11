@@ -13,7 +13,7 @@ Content-Type: application/json
 POST http://127.0.0.1:8000/login 
 Content-Type: application/json
 
-{ "login_credential": "testCaseMac@lau.edu", "password": "TestCase1!89"}
+{ "login_credential": "elie.sawmaawad@lau.edu", "password": "TestCase1!89"}
 
 ### logging in - provides authorization token
 ### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown
@@ -21,7 +21,7 @@ Content-Type: application/json
 
 POST http://127.0.0.1:8000/user/sendConfirmationEmail
 Content-Type: application/json
-Authorization: Token 8c230a2c1460e565674ae82fe073d3dd6a76059e
+Authorization: Token 52791df474fce0b7e121b3b7b18afc9ae7dd997a
 
 ### used to send the confirmation email
 ### this is the manual api if the confirmation didn't work the first time
@@ -120,7 +120,7 @@ GET http://127.0.0.1:8000/getCourses?search_entry=gineering
 ### filtering tutors:
 
 GET http://127.0.0.1:8000/getTutors
-Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Authorization: Token 27101fe8a0290ed253405310dd690fcb495064c5
 ### gets all the tutors without filtering
 
 GET http://127.0.0.1:8000/getTutors?course_id=2
