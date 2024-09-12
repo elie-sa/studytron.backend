@@ -1,0 +1,15 @@
+POST http://127.0.0.1:8000/activateAccount
+Content-Type: application/json
+
+{
+    "tutor_id": 2,
+    "duration": 2
+}
+
+### provide this function with the tutor id and amount of months (if subscription sizes will vary)
+
+GET http://127.0.0.1:8000/tutor/getDaysLeft
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
+Content-Type: application/json
+
+### provides the number of days left in the current active subscription

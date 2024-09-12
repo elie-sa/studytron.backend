@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, re_path
-from . import views, views_scheduling, views_rating
+from . import views, views_scheduling, views_rating, views_payment
 
 urlpatterns = [
     # authentication apis
@@ -69,6 +69,10 @@ urlpatterns = [
 
     #Banning
     path('tutor/banUser', views.tutor_ban_user, name="tutor_ban_user"),
-    path('tutor/unbanUser', views.tutor_unban_user, name="tutor_unban_user"),\
+    path('tutor/unbanUser', views.tutor_unban_user, name="tutor_unban_user"),
     path('tutor/getBannedUsers', views.tutor_get_banned_users, name="tutor_get_banned_users"),
+
+    #Payment and Activation
+    path('activateAccount', views_payment.activate_tutor_account, name="activate_tutor_account"),
+    path('tutor/getDaysLeft', views_payment.tutor_get_subscription_days, name="tutor_get_subscription_days")
 ]

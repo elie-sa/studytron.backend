@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Major, Tutor, Language, Rating, SpecificRating, Booking, Profile, EmailConfirmationToken, TutorPending, Pending
+from .models import Course, Major, Tutor, Language, Rating, SpecificRating, Booking, Profile, EmailConfirmationToken, TutorPending, Pending, FileUpload, Subscription
 
 class BookingAdmin(admin.ModelAdmin):
     list_display = ['tutor', 'start_time', 'user']
@@ -16,3 +16,5 @@ admin.site.register(Profile)
 admin.site.register(EmailConfirmationToken)
 admin.site.register(TutorPending)
 admin.site.register(Pending)
+admin.site.register(FileUpload)
+admin.site.register(Subscription)

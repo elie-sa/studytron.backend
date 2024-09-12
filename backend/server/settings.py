@@ -3,8 +3,6 @@ import pymysql
 
 pymysql.install_as_MySQLdb()
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -139,7 +137,21 @@ ANYMAIL = {
     "MAILERSEND_SENDER_DOMAIN": 'trial-0r83ql3dvxpgzw1j.mlsender.net',
 }
 
-EMAIL_BACKEND = "anymail.backends.mailersend.EmailBackend"
-#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#EMAIL_BACKEND = "anymail.backends.mailersend.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "studytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
 SERVER_EMAIL = "serverstudytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
+
+"""STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            'timeout': 20,
+            'expiration_secs': 500,#look at it 
+        },
+    },
+
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    }
+}"""

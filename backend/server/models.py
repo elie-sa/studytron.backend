@@ -1,8 +1,14 @@
+from django.utils import timezone
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import pyotp
+
+class FileUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profile_picture")
+    file = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class EmailConfirmationToken(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,  editable = False )
@@ -41,6 +47,24 @@ class Tutor(models.Model):
     def __str__ (self):
         return f"{self.user.first_name} {self.user.last_name}"
     
+class Subscription(models.Model):
+    tutor = models.OneToOneField(Tutor, on_delete=models.CASCADE, related_name="subscription")
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    def is_active(self):
+        return self.end_date > timezone.now()
+
+    def days_left(self):
+        time_left = self.end_date - timezone.now()
+        days_left = time_left.days if time_left.days > 0 else 0
+        
+        return days_left
+
+    def __str__(self):
+        return f"Subscription for {self.tutor.user.first_name} {self.tutor.user.last_name}"
+
+
 # rating models
 class Rating(models.Model):
     tutor = models.ForeignKey(Tutor, related_name="rating", on_delete=models.CASCADE, blank = False)
