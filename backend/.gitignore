@@ -2,3 +2,4 @@
 /server/migrations
 /server/__pycache__
 /server/settings.py
+.env
