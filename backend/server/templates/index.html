@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+</head>
+<body>
+
+    <h2>Upload Profile Picture</h2>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" name="file" accept="*/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Your Profile Picture</h2>
+    <img id="profilePicture" src="" alt="Profile Picture" style="max-width: 300px;">
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            
+            const fileInput = document.getElementById('fileInput'); // Get the file input
+            const file = fileInput.files[0]; // Get the selected file
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file); // Append the file to FormData
+
+                // Send the file to the Django API
+                fetch('http://127.0.0.1:8000/user/uploadProfilePicture', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4'
+                    },
+                    body: formData 
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('File uploaded successfully:', data);
+                    alert('File uploaded successfully');
+                })
+                .catch(error => {
+                    console.error('File upload failed:', error);
+                    alert('File upload failed');
+                });
+            } else {
+                alert('Please select a file to upload');
+            }
+        });
+
+        fetch('http://127.0.0.1:8000/user/getProfilePicture', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4'  // Replace with actual token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const imgElement = document.getElementById('profilePicture');
+            if (data.file_url) {
+                // Set the src attribute to the file URL
+                imgElement.src = data.file_url;
+            } else {
+                // Handle the case where no profile picture is available
+                imgElement.alt = 'No profile picture available';
+                imgElement.src = '';  // Clear the src if no image is available
+            }
+        })
+        .catch(error => console.error('Error fetching profile picture URL:', error));
+    </script>
+
+</body>
+</html>

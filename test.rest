@@ -119,8 +119,7 @@ GET http://127.0.0.1:8000/getCourses?search_entry=gineering
 
 ### filtering tutors:
 
-GET http://127.0.0.1:8000/getTutors
-Authorization: Token 27101fe8a0290ed253405310dd690fcb495064c5
+GET http://127.0.0.1:8000/getTutors/
 ### gets all the tutors without filtering
 
 GET http://127.0.0.1:8000/getTutors?course_id=2
@@ -216,3 +215,5 @@ Content-Type: application/json
 Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
 
 ### provides a list of all the banned users of the tutor
+
+

@@ -1,9 +1,26 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Booking, Major, Course, Language, Pending, Profile, Rating, Tutor
+from .models import Booking, Major, Course, Language, Pending, Profile, Rating, Tutor, FileUpload
 from django.utils import timezone 
 from datetime import datetime
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FileUpload
+        fields = ('file',)  # Do not include 'user' here
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request else None
+
+        # Ensure user is not in validated_data
+        if 'user' in validated_data:
+            raise ValueError("User should not be included in validated_data")
+
+        # Create and return the FileUpload instance
+        file_upload = FileUpload.objects.create(user=user, **validated_data)
+        return file_upload
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -102,16 +119,26 @@ class TutorSerializer(serializers.ModelSerializer):
     languages = LanguageSerializer(many=True, read_only=True)
     user = UserSerializer(read_only=True)
     rating =serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = Tutor
-        fields = ['id', 'user', 'description', 'taught_courses', 'rate', 'languages', 'rating']
+        fields = ['id', 'user', 'description', 'taught_courses', 'rate', 'languages', 'rating', 'profile_picture']
 
     def get_rating(self, obj):
         try:
             rating = Rating.objects.get(tutor=obj)
             return RatingSerializer(rating).data
         except Rating.DoesNotExist:
+            return None
+        
+    def get_profile_picture(self, obj):
+        try:
+            profile_picture = FileUpload.objects.filter(user=obj.user).last()
+            if profile_picture:
+                return profile_picture.file.url
+            return None
+        except FileUpload.DoesNotExist:
             return None
 
 # Booking Serializers    

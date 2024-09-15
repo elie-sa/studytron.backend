@@ -1,11 +1,15 @@
 from pathlib import Path
-import pymysql
+import pymysql, environ
 
 pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -15,6 +19,8 @@ SECRET_KEY = 'django-insecure-ak+vt-d5b8(25a)c&)6epv2_u(^q=p$(g1asrc^hl@zew3c)sh
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+APPEND_SLASH = False
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
@@ -142,16 +148,20 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "studytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
 SERVER_EMAIL = "serverstudytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
 
-"""STORAGES = {
+STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
             'timeout': 20,
-            'expiration_secs': 500,#look at it 
+            'expiration_secs': 500,
         },
     },
 
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     }
-}"""
+}
+
+AZURE_CONTAINER = env('AZURE_CONTAINER')
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')

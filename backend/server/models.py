@@ -25,7 +25,7 @@ class Major(models.Model):
 class Course(models.Model):
     name = models.CharField(max_length = 64)
     major = models.ForeignKey(Major, on_delete=models.CASCADE, related_name = "courses")
-    code = models.CharField(max_length = 8)     
+    code = models.CharField(max_length = 8)
 
     def __str__ (self):
         return f"{self.code} - {self.name}"    

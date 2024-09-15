@@ -74,5 +74,9 @@ urlpatterns = [
 
     #Payment and Activation
     path('activateAccount', views_payment.activate_tutor_account, name="activate_tutor_account"),
-    path('tutor/getDaysLeft', views_payment.tutor_get_subscription_days, name="tutor_get_subscription_days")
+    path('tutor/getDaysLeft', views_payment.tutor_get_subscription_days, name="tutor_get_subscription_days"),
+
+    #Profile Pictures
+    path('user/uploadProfilePicture', views.upload_profile_picture, name="upload_profile_picture"),
+    path('user/getProfilePicture', views.get_profile_picture, name='get_profile_picture'),
 ]

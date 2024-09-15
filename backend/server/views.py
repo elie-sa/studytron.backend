@@ -10,9 +10,9 @@ from django.contrib.auth.models import User, Group
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
 from . import views_scheduling
-from .models import Booking, Course, Language, Major, Rating, Tutor, EmailConfirmationToken, TutorPending
+from .models import Booking, Course, FileUpload, Language, Major, Rating, Tutor, EmailConfirmationToken, TutorPending
 from django.db.models import Q, Count
-from .serializers import ChangePasswordSerializer, LanguageSerializer, MajorSerializer, PasswordChangeSerializer, UserSerializer, TutorSerializer
+from .serializers import ChangePasswordSerializer, FileUploadSerializer, LanguageSerializer, MajorSerializer, PasswordChangeSerializer, UserSerializer, TutorSerializer
 from django.core.mail import send_mail
 from django.template.loader import get_template
 import pyotp
@@ -696,3 +696,46 @@ def tutor_get_banned_users(request):
 
     serializer = UserSerializer(bannedProfiles, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def upload_profile_picture(request):
+    serializer = FileUploadSerializer(data=request.data, context={'request': request, 'user': request.user})
+    if serializer.is_valid():
+        file_upload = serializer.save()
+
+        delete_old_profile_picture(request.user, file_upload)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_profile_picture(request):
+    file_upload = FileUpload.objects.filter(user=request.user).last()
+
+    if file_upload:
+        file_url = file_upload.file.url
+    else:
+        file_url = None 
+
+    return Response({'file_url': file_url}, status=status.HTTP_200_OK)
+
+from azure.storage.blob import BlobClient
+from django.conf import settings
+
+def delete_old_profile_picture(user, new_file_upload):
+    old_file_uploads = FileUpload.objects.filter(user=user).exclude(id=new_file_upload.id)
+    for old_file_upload in old_file_uploads:
+        old_file_name = old_file_upload.file.name.split('/')[-1]
+        blob_client = BlobClient.from_blob_url(f"https://{settings.AZURE_ACCOUNT_NAME}.blob.core.windows.net/{settings.AZURE_CONTAINER}/{old_file_name}")
+        
+        try:
+            blob_client.delete_blob()
+        except Exception as e:
+            print(f"Failed to delete old profile picture: {e}")
+
+        old_file_upload.delete()
