@@ -1,7 +1,7 @@
 POST http://127.0.0.1:8000/signup 
 Content-Type: application/json
 
-{ "username": "elieSawma", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad@lau.edu",
+{ "username": "elieSawma2", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad2@lau.edu",
 "is_tutor": true, "description": "I am a tutor model for testing", "taughtCourses": [1,2], "rate": 20 ,"languages": [1], 
 "profile": {"phone_number": "03264748"}}
 

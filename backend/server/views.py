@@ -30,6 +30,8 @@ def signup(request):
     
     if email and User.objects.filter(email=email).exists():
         return Response({'email': 'The email address is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    
 
     if serializer.is_valid():
         user = serializer.save()

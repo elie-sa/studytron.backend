@@ -25,6 +25,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['phone_number']
 
+    def validate_phone_number(self, value):
+        if Profile.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError(f"The phone number {value} is already in use.")
+        return value
+
 class PasswordChangeSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     new_password = serializers.CharField(write_only=True, required=True)
