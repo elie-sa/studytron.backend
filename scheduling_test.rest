@@ -1,10 +1,10 @@
 POST http://127.0.0.1:8000/tutor/createSlot
-Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
 Content-Type: application/json
 
 {
-    "hour": 8,
-    "day": 10,
+    "hour": 9,
+    "day": 19,
     "month": 9
 }
 
@@ -49,11 +49,11 @@ Content-Type: application/json
 ### this api requires tutor authentication
 
 PUT http://127.0.0.1:8000/user/bookSlot
-Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
 Content-Type: application/json
 
 {
-    "booking_id": 5,
+    "booking_id": 2,
     "course_id": 2
 }
 
@@ -97,7 +97,7 @@ Content-Type: application/json
 ### returns the booked and empty days of a tutor whose id is provided with boolean values
 
 GET http://127.0.0.1:8000/user/getMyBookedDays
-Authorization: Token 34002423292d35f8f655832d3aab1c9e010480c5
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
 Content-Type: application/json
 
 ### returns a list of all the days with booked slots by the user
@@ -136,6 +136,17 @@ Content-Type: application/json
 
 ### this get request returns the tutor's list of pending requests formatted with the users' names and start time
 
+GET http://127.0.0.1:8000/user/getPendingDays
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
+Content-Type: application/json
+
+### returns the days with pendings for users
+
+GET http://127.0.0.1:8000/tutor/getPendingDays
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
+Content-Type: application/json
+
+### returns the days with pendings for tutors
 
 GET http://127.0.0.1:8000/tutor/confirmBooking?booking_id=5&user_id=2&course_id=2
 Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213

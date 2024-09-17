@@ -461,6 +461,39 @@ def user_get_pending_bookings(request):
     
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def user_get_pending_days(request):
+    pendings = request.user.profile.pending_bookings.all()
+
+    grouped_bookings = defaultdict(list)
+    for pending in pendings:
+        day = pending.booking.start_time.date()
+        grouped_bookings[day].append(pending)
+
+    booking_days = list(grouped_bookings.keys())
+    booking_days.sort(reverse=True)
+
+    return Response(booking_days, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def tutor_get_pending_days(request):
+    tutor_pending = TutorPending.objects.get(tutor = request.user.tutorInfo.first())
+    pendings = tutor_pending.pending_bookings.all()
+
+    grouped_bookings = defaultdict(list)
+    for pending in pendings:
+        day = pending.booking.start_time.date()
+        grouped_bookings[day].append(pending)
+
+    booking_days = list(grouped_bookings.keys())
+    booking_days.sort(reverse=True)
+
+    return Response(booking_days, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
