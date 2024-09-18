@@ -14,7 +14,10 @@
     <body>
         <style>
             body {
-                background-color: rgba(0, 172, 151, 0.8);
+                margin: 0;
+            }
+
+            .bg--container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -23,6 +26,15 @@
                 padding: 40px;
                 box-sizing: border-box;
                 margin: 0;
+                width: 100vw;
+            }
+
+            .green--bg {
+                background-color: rgba(0, 172, 151, 0.8);
+            }
+            
+            .red--bg {
+                background-color: rgba(217, 77, 77, 0.9);
             }
             
             .email-confirmation--container {
@@ -36,27 +48,39 @@
                 padding: 40px;
                 box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
             }
-
+            
             .extra-icon {
                 color: rgb(0, 172, 151);
                 font-size: 4rem;
             }
-
+            
             .confirmation-button {
-                background-color: rgb(0, 172, 151);
                 padding: 10px 20px;
                 color: white;
                 border-radius: 5px;
                 border: none;
                 font-family: "Open Sans", sans-serif;
                 margin-top: 10px;
-            }
-            
-            .confirmation-button:hover {
-                background-color: rgb(4, 132, 117);
                 cursor: pointer;
             }
+            
+            .email-confirmation--container a {
+                background-color: rgb(0, 172, 151);
+                text-decoration: none;
+            }
 
+            .email-confirmation--container a:hover {
+                background-color: rgb(2, 114, 101);
+            }
+
+            .email-confirmation--container button {
+                background-color: rgb(217, 77, 77);
+            }
+            
+            .email-confirmation--container button:hover {
+                background-color: rgb(159, 57, 57);
+            }
+            
             @media (max-width: 450px) {
                 .email-confirmation--container {
                     padding: 0;
@@ -94,34 +118,41 @@
             });
         </script>
 
+<div>
+    
+</div>
         {% if is_email_confirmed == True %}
-        <div class="email-confirmation--container">
-            <script src="https://cdn.lordicon.com/lordicon.js"></script>
-            <lord-icon
-                src="https://cdn.lordicon.com/oqdmuxru.json"
-                trigger="hover"
-                colors="primary:#00ac97"
-                style="width:100px;height:100px">
-            </lord-icon>
-            <h1>Welcome to Studytron!</h1>
-            <p>Your email address has been successfully confirmed. Thank you for verifying your email.</p>
-
-            <a class="confirmation-button" href="http://localhost:3000/Find-Tutor#/sign-in">Sign in</a>
+        <div class="bg--container green--bg">
+            <div class="email-confirmation--container">
+                <script src="https://cdn.lordicon.com/lordicon.js"></script>
+                <lord-icon
+                    src="https://cdn.lordicon.com/oqdmuxru.json"
+                    trigger="hover"
+                    colors="primary:#00ac97"
+                    style="width:100px;height:100px">
+                </lord-icon>
+                <h1>Welcome to Studytron!</h1>
+                <p>Your email address has been successfully confirmed. Thank you for verifying your email.</p>
+    
+                <a class="confirmation-button" href="http://localhost:3000/Find-Tutor#/sign-in">Sign in</a>
+            </div>
         </div>
 
         {% else %}
-        <div class="email-confirmation--container">
-            <script src="https://cdn.lordicon.com/lordicon.js"></script>
-            <lord-icon
-                src="https://cdn.lordicon.com/ygvjgdmk.json"
-                trigger="hover"
-                colors="primary:#00ac97"
-                style="width:100px;height:100px">
-            </lord-icon>
-            <h1>Oops, something went wrong!</h1>
-            <p>Your confirmation token has expired. Please request a new one to continue.</p>
-
-            <button class="confirmation-button" id="resend-email">Resend Email</button>
+        <div class="bg--container red--bg">
+            <div class="email-confirmation--container">
+                <script src="https://cdn.lordicon.com/lordicon.js"></script>
+                <lord-icon
+                    src="https://cdn.lordicon.com/ygvjgdmk.json"
+                    trigger="hover"
+                    colors="primary:#d94d4d"
+                    style="width:100px;height:100px">
+                </lord-icon>
+                <h1>Oops, something went wrong!</h1>
+                <p>Your confirmation token has expired. Please request a new one to continue.</p>
+    
+                <button class="confirmation-button red--bg" id="resend-email">Resend Email</button>
+            </div>
         </div>
         {% endif %}
     </body>
