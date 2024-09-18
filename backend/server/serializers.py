@@ -14,8 +14,8 @@ class FileUploadSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user if request else None
 
-        if 'user' in validated_data:
-            raise ValueError("User should not be included in validated_data")
+        if not user:
+            raise serializers.ValidationError("User must be authenticated to upload a file.")
 
         file_upload = FileUpload.objects.create(user=user, **validated_data)
         return file_upload

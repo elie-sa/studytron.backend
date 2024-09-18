@@ -742,3 +742,27 @@ def tutor_check_booking_condition(request):
         return Response({"pending":"You have pending requests for this booking slot."}, status=status.HTTP_200_OK)
     
     return Response({"available":"This booking slot is available for new requests."}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def tutor_get_slotted_days(request):
+    try:
+        tutor = request.user.tutorInfo.first()
+    except:
+        return Response("Unauthorized access, the user is not a tutor.", status=status.HTTP_403_FORBIDDEN)
+
+    now = timezone.now()
+    one_month_later = now + timezone.timedelta(days=30)
+
+    slots = Booking.objects.filter(tutor=tutor).order_by('start_time')
+    slots.filter(start_time__range=(now, one_month_later))
+
+    grouped_slots = defaultdict(list)
+    for slot in slots:
+        day = slot.start_time.date()
+        grouped_slots[day].append(slot)
+
+    slotted_days = list(grouped_slots.keys())
+
+    return Response(slotted_days, status=status.HTTP_200_OK)

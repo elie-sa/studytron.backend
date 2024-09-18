@@ -15,6 +15,7 @@
 
     <h2>Your Profile Picture</h2>
     <img id="profilePicture" src="" alt="Profile Picture" style="max-width: 300px;">
+    <button id="deletePictureButton">Delete Profile Picture</button>
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function (event) {
@@ -49,6 +50,31 @@
             }
         });
 
+        document.getElementById('deletePictureButton').addEventListener('click', function () {
+            fetch('http://127.0.0.1:8000/user/deleteProfilePicture', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4'  // Replace with actual token
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Profile picture deleted successfully');
+                    alert('Profile picture deleted successfully');
+                    // Clear the image src
+                    document.getElementById('profilePicture').src = '';
+                } else {
+                    console.error('Error deleting profile picture');
+                    alert('Error deleting profile picture');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting profile picture');
+            });
+        });
+
+        // Fetch and display the current profile picture on page load
         fetch('http://127.0.0.1:8000/user/getProfilePicture', {
             method: 'GET',
             headers: {
@@ -72,3 +98,4 @@
 
 </body>
 </html>
+

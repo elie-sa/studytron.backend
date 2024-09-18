@@ -704,11 +704,11 @@ def tutor_get_banned_users(request):
 @permission_classes([IsAuthenticated])
 def upload_profile_picture(request):
     serializer = FileUploadSerializer(data=request.data, context={'request': request, 'user': request.user})
+    
     if serializer.is_valid():
+        delete_old_profile_picture(request.user)
+
         file_upload = serializer.save()
-
-        delete_old_profile_picture(request.user, file_upload)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -726,18 +726,38 @@ def get_profile_picture(request):
 
     return Response({'file_url': file_url}, status=status.HTTP_200_OK)
 
-from azure.storage.blob import BlobClient
+from azure.storage.blob import BlobServiceClient
 from django.conf import settings
 
-def delete_old_profile_picture(user, new_file_upload):
-    old_file_uploads = FileUpload.objects.filter(user=user).exclude(id=new_file_upload.id)
-    for old_file_upload in old_file_uploads:
-        old_file_name = old_file_upload.file.name.split('/')[-1]
-        blob_client = BlobClient.from_blob_url(f"https://{settings.AZURE_ACCOUNT_NAME}.blob.core.windows.net/{settings.AZURE_CONTAINER}/{old_file_name}")
+def delete_old_profile_picture(user):
+    file_upload = FileUpload.objects.filter(user=user).last()
+
+    if file_upload:
+        old_file_path = file_upload.file.name
         
+        connection_string = f"DefaultEndpointsProtocol=https;AccountName={settings.AZURE_ACCOUNT_NAME};AccountKey={settings.AZURE_ACCOUNT_KEY};EndpointSuffix=core.windows.net"
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        
+        container_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER)
+        
+        blob_client = container_client.get_blob_client(old_file_path)
+
         try:
             blob_client.delete_blob()
+            print(f"Successfully deleted old profile picture: '{old_file_path}'")
         except Exception as e:
             print(f"Failed to delete old profile picture: {e}")
 
-        old_file_upload.delete()
+        file_upload.delete()
+    else:
+        print("No file upload found for the user.")
+
+@api_view(['DELETE'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_profile_picture(request):
+    delete_old_profile_picture(request.user)
+    try:
+        return Response("Profile picture successfully removed.", status=status.HTTP_200_OK)
+    except:
+        return Response("Profile picture already removed", status=status.HTTP_400_BAD_REQUEST)

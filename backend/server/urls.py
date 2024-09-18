@@ -51,6 +51,7 @@ urlpatterns = [
     path('user/getHours', views_scheduling.get_hours, name="get_hours"),
     path('user/getBookings', views_scheduling.get_my_bookings, name="get_my_bookings"),
     path('user/getBookedDays', views_scheduling.user_get_days, name="user_get_days"),
+    path('tutor/getSlottedDays', views_scheduling.tutor_get_slotted_days, name="tutor_get_slotted_days"),
     path('user/getMyBookedDays', views_scheduling.user_get_booked_days, name="user_get_booked_days"),
     path('user/getPendingRequests', views_scheduling.user_get_pending_bookings, name="user_get_pending_bookings"),
     path('tutor/getHours', views_scheduling.tutor_get_hours, name="tutor_get_hours"),
@@ -81,4 +82,5 @@ urlpatterns = [
     #Profile Pictures
     path('user/uploadProfilePicture', views.upload_profile_picture, name="upload_profile_picture"),
     path('user/getProfilePicture', views.get_profile_picture, name='get_profile_picture'),
+    path('user/deleteProfilePicture', views.delete_profile_picture, name="delete_profile_picture"),
 ]
