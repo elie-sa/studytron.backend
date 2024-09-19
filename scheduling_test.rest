@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "hour": 9,
-    "day": 19,
+    "day": 21,
     "month": 9
 }
 
@@ -163,3 +163,9 @@ Content-Type: application/json
 
 ### run before deleting a slot to find out if it has bookings or pending requests first
 ### returns whether there is pending slots or bookings
+
+GET http://127.0.0.1:8000/tutor/getSlottedDays
+Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
+Content-Type: application/json
+
+### gets the days with created slots used for the edit hours calendar in the settings
