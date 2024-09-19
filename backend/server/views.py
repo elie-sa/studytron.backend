@@ -124,7 +124,7 @@ def send_confirmation_email(email, token_id, user_id):
     data = {
         'token_id': str(token_id),
         'user_id': str(user_id),
-        'auth_token': auth_token
+        'auth_token': str(auth_token)
     }
     message = get_template('users/confirmation_email.txt').render(data)
     send_mail(subject='Please confirm email',

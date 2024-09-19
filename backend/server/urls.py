@@ -9,7 +9,7 @@ urlpatterns = [
     re_path('signup', views.signup),
     re_path('test_token', views.test_token),
     path('user/sendConfirmationEmail', views.create_email_token, name = "send_confirmation_email"),
-    path('user/confirmEmail/', views.confirm_email_view, name="confirm_email_view"),
+    path('user/confirmEmail', views.confirm_email_view, name="confirm_email_view"),
     path('user/forgotPassword', views.check_email, name="check_email"),
     path('user/verifyOtp', views.verify_otp, name="verify_otp"),
     path('user/changeForgottenPassword', views.change_forgotten_password, name="change_forgotten_password"),
