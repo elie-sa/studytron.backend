@@ -17,7 +17,7 @@ class EmailConfirmationToken(models.Model):
 
 class Major(models.Model):
     name = models.CharField(max_length = 64)
-    code = models.CharField(max_length = 3)
+    code = models.CharField(max_length = 5)
 
     def __str__ (self):
             return f"{self.name}"
