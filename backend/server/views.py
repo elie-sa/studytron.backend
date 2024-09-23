@@ -370,7 +370,16 @@ def list_tutors(request):
     if course_id:
         query &= Q(taught_courses__id=course_id)
     if search_entry:
-        query &= Q(user__first_name__icontains=search_entry) | Q(user__last_name__icontains=search_entry)
+        search_entry = search_entry.strip()
+        search_terms = search_entry.split()
+        
+        if len(search_terms) >= 2:
+            first_name_part = search_terms[0]
+            last_name_part = " ".join(search_terms[1:]) 
+            query &= (Q(user__first_name__icontains=first_name_part) & Q(user__last_name__icontains=last_name_part)) | \
+                     (Q(user__first_name__icontains=last_name_part) & Q(user__last_name__icontains=first_name_part))
+        else:
+            query &= Q(user__first_name__icontains=search_entry) | Q(user__last_name__icontains=search_entry)
     if language:
         query &= Q(languages__id=language)
     if rate:

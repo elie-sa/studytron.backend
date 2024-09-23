@@ -122,22 +122,22 @@ GET http://127.0.0.1:8000/getCourses?search_entry=gineering
 GET http://127.0.0.1:8000/getTutors/
 ### gets all the tutors without filtering
 
-GET http://127.0.0.1:8000/getTutors?course_id=2
+GET http://127.0.0.1:8000/getTutors/?course_id=2
 ### gets all the tutors who teach course of id 2
 
-GET http://127.0.0.1:8000/getTutors?search_entry=ara
+GET http://127.0.0.1:8000/getTutors/?search_entry=Elie%20SawmaAwad
 ### searches the tutors
 
-GET http://127.0.0.1:8000/getTutors?rate=15
+GET http://127.0.0.1:8000/getTutors/?rate=15
 ### gets all the tutors with an hourly rate of 15 or below
 
-GET http://127.0.0.1:8000/getTutors?language_id=4
+GET http://127.0.0.1:8000/getTutors/?language_id=4
 ### get all the tutors who the speak the language of id 3
 
-GET http://127.0.0.1:8000/getTutors?rating=2
+GET http://127.0.0.1:8000/getTutors/?rating=2
 ### get all the tutors who have a rating greater than or equal to 2
 
-GET http://127.0.0.1:8000/getTutors?course_id=2&search_entry=mac&language_id=2&rate=50&rating=2
+GET http://127.0.0.1:8000/getTutors/?course_id=2&search_entry=mac&language_id=2&rate=50&rating=2
 ### searches using all the possible arguments (any arguments can be combined together)
 
 ### rating APIs
