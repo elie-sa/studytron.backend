@@ -277,7 +277,7 @@ def list_courses(request):
     major_id = request.query_params.get('major_id', None)
     search_entry = request.query_params.get('search_entry', None)
     page_number = request.query_params.get('page', 1)
-    items_per_page = 10 
+    items_per_page = 9 
 
     query = Q()
     if major_id:
