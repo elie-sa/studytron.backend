@@ -84,7 +84,13 @@ def login(request):
             return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
         
     if not user.profile.is_confirmed:
-        return Response("Invalid login credentials. Email Verification is needed.", status=status.HTTP_403_FORBIDDEN)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            "message": "Invalid login credentials. Email Verification is needed.",
+            "token": token.key
+            }, status=status.HTTP_403_FORBIDDEN)
+    
+
     if not user.check_password(request.data['password']):
         return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
     token, created = Token.objects.get_or_create(user=user)
