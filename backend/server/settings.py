@@ -143,8 +143,8 @@ ANYMAIL = {
     "MAILERSEND_SENDER_DOMAIN": 'trial-0r83ql3dvxpgzw1j.mlsender.net',
 }
 
-#EMAIL_BACKEND = "anymail.backends.mailersend.EmailBackend"
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "anymail.backends.mailersend.EmailBackend"
+#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "studytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
 SERVER_EMAIL = "serverstudytron@trial-0r83ql3dvxpgzw1j.mlsender.net"
 
