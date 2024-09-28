@@ -137,7 +137,7 @@ Content-Type: application/json
 ### this get request returns the tutor's list of pending requests formatted with the users' names and start time
 
 GET http://127.0.0.1:8000/user/getPendingDays
-Authorization: Token 465d29ac3f89cf2ef8df0a959cd18b9ddae826e4
+Authorization: Token 8a0cbe5fcd27c19a46775a49acf0fe96f7274a27
 Content-Type: application/json
 
 ### returns the days with pendings for users

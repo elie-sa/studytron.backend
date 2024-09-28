@@ -9,6 +9,7 @@ from rest_framework import status
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
+from .models import ExpiringToken
 from . import views_scheduling
 from .models import Booking, Course, FileUpload, Language, Major, Rating, Tutor, EmailConfirmationToken, TutorPending
 from django.db.models import Q, Count
@@ -30,8 +31,6 @@ def signup(request):
     
     if email and User.objects.filter(email=email).exists():
         return Response({'email': 'The email address is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    
 
     if serializer.is_valid():
         user = serializer.save()
@@ -55,7 +54,7 @@ def signup(request):
                 user.delete()
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        token = Token.objects.create(user=user)
+        token = ExpiringToken.objects.create(user=user)
 
         email_token = EmailConfirmationToken.objects.create(user=user)
         send_confirmation_email(email=user.email, token_id=email_token.pk, user_id=user.pk)
@@ -93,7 +92,7 @@ def login(request):
 
     if not user.check_password(request.data['password']):
         return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
-    token, created = Token.objects.get_or_create(user=user)
+    token, created = ExpiringToken.objects.get_or_create(user=user)
     serializer = UserSerializer(user)
     return Response({'token': token.key, 'user': serializer.data})
 

@@ -12,7 +12,7 @@ Content-Type: application/json
 POST http://127.0.0.1:8000/login 
 Content-Type: application/json
 
-{ "login_credential": "elie.sawmaawad2@lau.edu", "password": "TestCase1!89"}
+{ "login_credential": "elie.sawmaawad@lau.edu", "password": "TestCase1!89"}
 
 ### logging in - provides authorization token
 ### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown

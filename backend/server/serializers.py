@@ -63,11 +63,6 @@ class UserSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({field: f"{field.capitalize()} is required."})
         
         return data
-    
-    def validate_email(self, value):
-        if not '@lau.edu' in value:
-            raise serializers.ValidationError("Please use your Lebanese American University email address.")
-        return value
 
     def validate_username(self, value):
         if ' ' in value:
