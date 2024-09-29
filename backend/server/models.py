@@ -1,34 +1,9 @@
 from django.utils import timezone
-from datetime import timedelta
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
-from rest_framework.authentication import TokenAuthentication
 from django.core.validators import MinValueValidator, MaxValueValidator
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.authtoken.models import Token
 import pyotp
-
-class ExpiringToken(Token):
-    expires = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        self.expires = timezone.now() + timedelta(hours=4)
-        super().save(*args, **kwargs)
-
-class ExpiringTokenAuthentication(TokenAuthentication):
-
-    def authenticate(self, request):
-        auth = super().authenticate(request)
-        if not auth:
-            return None
-        
-        token = auth[1]
-        if token.expires < timezone.now():
-            token.delete()
-            raise AuthenticationFailed('Token has expired.')
-
-        return auth
 
 class FileUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profile_picture")

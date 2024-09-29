@@ -1,4 +1,5 @@
 import re
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from django.http import Http404
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -9,7 +10,6 @@ from rest_framework import status
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
-from .models import ExpiringToken
 from . import views_scheduling
 from .models import Booking, Course, FileUpload, Language, Major, Rating, Tutor, EmailConfirmationToken, TutorPending
 from django.db.models import Q, Count
@@ -17,6 +17,7 @@ from .serializers import ChangePasswordSerializer, FileUploadSerializer, Languag
 from django.core.mail import send_mail
 from django.template.loader import get_template
 import pyotp
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.paginator import Paginator
 
 # authentication apis
@@ -54,12 +55,17 @@ def signup(request):
                 user.delete()
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        token = ExpiringToken.objects.create(user=user)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
         email_token = EmailConfirmationToken.objects.create(user=user)
-        send_confirmation_email(email=user.email, token_id=email_token.pk, user_id=user.pk)
+        send_confirmation_email(email=user.email, token_id=email_token.pk, user_id=user.pk, access_token=access_token)
 
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({
+            'access': access_token,
+            'refresh': str(refresh),
+            'user': serializer.data
+        }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,27 +89,37 @@ def login(request):
             return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
         
     if not user.profile.is_confirmed:
-        token, created = Token.objects.get_or_create(user=user)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
         return Response({
             "message": "Invalid login credentials. Email Verification is needed.",
-            "token": token.key
+            'access': access_token,
+            'refresh': str(refresh),
             }, status=status.HTTP_403_FORBIDDEN)
     
 
     if not user.check_password(request.data['password']):
         return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
-    token, created = ExpiringToken.objects.get_or_create(user=user)
+    
+    refresh =   RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+
+
     serializer = UserSerializer(user)
-    return Response({'token': token.key, 'user': serializer.data})
+    return Response({
+        'access': access_token,
+        'refresh': str(refresh),
+        'user': serializer.data
+    })
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def test_token(request):
     return Response("passed for {}".format(request.user.email))
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
     user = request.user
@@ -115,32 +131,35 @@ def get_user_info(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_email_token(request):
     user = request.user
-    token = EmailConfirmationToken.objects.create(user = user)
-    send_confirmation_email(email=user.email, token_id = token.pk, user_id = user.pk)
+    token = EmailConfirmationToken.objects.create(user=user)
+
+    access_token = request.headers.get('Authorization').split(' ')[1] if request.headers.get('Authorization') else None
+    send_confirmation_email(email=user.email, token_id=token.pk, user_id=user.pk, access_token=access_token)
     return Response(data=None, status=status.HTTP_201_CREATED)
 
-def send_confirmation_email(email, token_id, user_id):
-    user = User.objects.get(id=user_id)
-    auth_token = Token.objects.get(user=user)
+def send_confirmation_email(email, token_id, user_id, access_token):
     data = {
         'token_id': str(token_id),
         'user_id': str(user_id),
-        'auth_token': str(auth_token)
+        'auth_token': access_token
     }
     message = get_template('users/confirmation_email.txt').render(data)
-    send_mail(subject='Please confirm email',
-              message = message,
-              recipient_list=[email],
-              from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
-              fail_silently = True)
+    send_mail(
+        subject='Please confirm your email',
+        message=message,
+        recipient_list=[email],
+        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        fail_silently=True
+    )
     
 def confirm_email_view(request):
     token_id = request.GET.get('token_id', None)
-    auth_token = request.GET.get('auth_token', None)
+    auth_token = request.GET.get('auth_token', None) 
+
     try:
         token = EmailConfirmationToken.objects.get(pk=token_id)
         user = token.user
@@ -149,11 +168,12 @@ def confirm_email_view(request):
         profile.is_confirmed = True
         profile.save()
         token.delete()
+        
         data = {'is_email_confirmed': True, 'token': auth_token}
-        return render(request, template_name='users/confirm_email_view.html', context = data)    
+        return render(request, template_name='users/confirm_email_view.html', context=data)    
     except EmailConfirmationToken.DoesNotExist:
         data = {'is_email_confirmed': False, 'token': auth_token}
-        return render(request, template_name='users/confirm_email_view.html', context = data)
+        return render(request, template_name='users/confirm_email_view.html', context=data)
 
 @api_view(['POST'])
 def check_email(request):
@@ -284,7 +304,7 @@ def list_courses(request):
     if search_entry:
         query &= Q(name__icontains=search_entry)
     
-    courses = Course.objects.filter(query).order_by('name')
+    courses = Course.objects.filter(query).annotate(num_tutors=Count('courseTutors')).filter(num_tutors__gt=0).order_by('name')
 
     paginator = Paginator(courses, items_per_page)
     page_obj = paginator.get_page(page_number)
@@ -351,17 +371,14 @@ def list_tutors(request):
     user = None
     tutor_to_exclude = None
     auth_header = request.headers.get('Authorization')
-
+    
     if auth_header:
-        for auth_class in [SessionAuthentication(), TokenAuthentication()]:
-            try:
-                user_auth_tuple = auth_class.authenticate(request)
-                if user_auth_tuple:
-                    user = user_auth_tuple[0]
-                    tutor_to_exclude = user.tutorInfo.first() if hasattr(user, 'tutorInfo') else None
-                    break
-            except Exception:
-                pass
+        jwt_auth = JWTAuthentication()
+        try:
+            user, _ = jwt_auth.authenticate(request)
+            tutor_to_exclude = user.tutorInfo.first() if hasattr(user, 'tutorInfo') else None
+        except Exception:
+            user = None
 
     course_id = request.query_params.get('course_id')
     language = request.query_params.get('language_id')
@@ -459,7 +476,7 @@ def get_language(request, language_id):
 
 # changing user attributes
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def change_user_name(request):
     user = request.user
@@ -487,7 +504,7 @@ def change_user_name(request):
 
 # changing password
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def change_password(request):
     user = request.user
@@ -508,7 +525,7 @@ def change_password(request):
 
 # changing tutor description
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_change_description(request):
     user = request.user
@@ -524,7 +541,7 @@ def tutor_change_description(request):
 
 # changing tutor courses
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_change_courses(request):
     user = request.user
@@ -540,7 +557,7 @@ def tutor_change_courses(request):
 
 # changing tutor languages
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_change_languages(request):
     user = request.user
@@ -556,7 +573,7 @@ def tutor_change_languages(request):
 
 # changing tutor rate
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_change_rate(request):
     user = request.user
@@ -571,7 +588,7 @@ def tutor_change_rate(request):
     return Response({'message': "Your rate has been updated successfully"}, status=status.HTTP_200_OK)
  
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def change_phone_number(request):
     user = request.user
@@ -585,7 +602,7 @@ def change_phone_number(request):
     return Response({'message': "Your phone number has been updated successfully"}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def contact_us(request):
     user = request.user
@@ -616,7 +633,7 @@ def contact_us(request):
     return Response("Your message has been sent successfully. We will get back to you soon.", status=200)
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_ban_user(request):
     user_id = request.data['user_id']
@@ -679,7 +696,7 @@ def send_pending_cancellation_emails(request, pending_bookings, tutor_name):
 
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_unban_user(request):
     user_id = request.data['user_id']
@@ -700,7 +717,7 @@ def tutor_unban_user(request):
     return Response(f"{user.first_name} {user.last_name} was successfully unbanned.", status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_banned_users(request):
     try:
@@ -714,7 +731,7 @@ def tutor_get_banned_users(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def upload_profile_picture(request):
     serializer = FileUploadSerializer(data=request.data, context={'request': request, 'user': request.user})
@@ -728,7 +745,7 @@ def upload_profile_picture(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_profile_picture(request):
     file_upload = FileUpload.objects.filter(user=request.user).last()
@@ -767,7 +784,7 @@ def delete_old_profile_picture(user):
         print("No file upload found for the user.")
 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_profile_picture(request):
     delete_old_profile_picture(request.user)

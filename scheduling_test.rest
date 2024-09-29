@@ -13,7 +13,7 @@ Content-Type: application/json
 ### a difference of 1 month between the first and last booking available
 
 GET http://127.0.0.1:8000/tutor/getHours
-Authorization: Token 5e291b20a0a9dbea92f827a15b480578f53e4465
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NjUyOTEzLCJpYXQiOjE3Mjc2Mzg1MTMsImp0aSI6ImEzM2RkN2QzYWNlNjQ0ODRiMWY2NjVlNjQwNWI5MmQ4IiwidXNlcl9pZCI6M30.cp_B0EKCQzz71fK7EdlITJFIang2c26EtuKvAMkI44s
 Content-Type: application/json
 
 ### will provide all the hours of the tutor from now till a month from now

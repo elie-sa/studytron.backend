@@ -1,7 +1,7 @@
 from django.utils import timezone
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from collections import defaultdict
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 from django.template.loader import get_template
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_booking(request):
     serializer = BookingSerializer(data=request.data, context={'request': request})
@@ -25,7 +25,7 @@ def create_booking(request):
 
 
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def book_session(request):
     serializer = CreateBookingSerializer(data=request.data, context={'request': request})
@@ -205,7 +205,7 @@ def confirm_booking(request):
 
 #get functions
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_hours(request):
     booked_only = request.query_params.get("booked_only", None)
@@ -246,7 +246,7 @@ def get_hours(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_hours(request):
     booked_only = request.query_params.get('booked_only', None)
@@ -288,7 +288,7 @@ def tutor_get_hours(request):
 
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_my_bookings(request):
     now = timezone.now()
@@ -314,7 +314,7 @@ def get_my_bookings(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_full_days(request):
     include_user_details = True
@@ -346,7 +346,7 @@ def tutor_get_full_days(request):
     return Response(fully_booked_days, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_days(request):
     try:
@@ -381,7 +381,7 @@ def tutor_get_days(request):
     return Response(days_availability, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def user_get_days(request):
     try:
@@ -412,7 +412,7 @@ def user_get_days(request):
     return Response(days_availability, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def user_get_booked_days(request):
     bookings = Booking.objects.filter(user = request.user)
@@ -428,7 +428,7 @@ def user_get_booked_days(request):
     return Response(booking_days, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def user_get_pending_bookings(request):
     try:
@@ -463,7 +463,7 @@ def user_get_pending_bookings(request):
         return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def user_get_pending_days(request):
     pendings = request.user.profile.pending_bookings.all()
@@ -479,7 +479,7 @@ def user_get_pending_days(request):
     return Response(booking_days, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_pending_days(request):
     tutor_pending = TutorPending.objects.get(tutor = request.user.tutorInfo.first())
@@ -497,7 +497,7 @@ def tutor_get_pending_days(request):
 
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_pending_bookings(request):
     try:
@@ -539,7 +539,7 @@ def tutor_get_pending_bookings(request):
 #deletion functions:
 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def cancel_my_booking(request):
     given_id = request.query_params.get("booking_id")
@@ -599,7 +599,7 @@ def cancel_my_booking(request):
 #this method is for the user to cancel the booking
 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_cancel_booking(request):
     given_id = request.query_params.get("booking_id")
@@ -628,7 +628,7 @@ def tutor_cancel_booking(request):
     return Response(f"Your booking with user {name} has been cancelled successfully.", status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_delete_slot(request):
     given_id = request.query_params.get("booking_id")
@@ -724,7 +724,7 @@ def send_pending_cancellation_emails(request, pending_bookings, booking):
         )
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_check_booking_condition(request):
     booking_id = request.query_params.get("booking_id")
@@ -744,7 +744,7 @@ def tutor_check_booking_condition(request):
     return Response({"available":"This booking slot is available for new requests."}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tutor_get_slotted_days(request):
     try:

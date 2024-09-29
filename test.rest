@@ -1,7 +1,7 @@
 POST http://127.0.0.1:8000/signup 
 Content-Type: application/json
 
-{ "username": "elieSawma3", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad2@lau.edu",
+{ "username": "elieSawma5", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad5@lau.edu",
 "is_tutor": true, "description": "I am a tutor model for testing", "taughtCourses": [1,2], "rate": 20 ,"languages": [1]}
 
 ### this api endpoint allows for signing users up : if the user already has an account
@@ -17,6 +17,15 @@ Content-Type: application/json
 ### logging in - provides authorization token
 ### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown
 ### let the user try one or two more confirmations if the first one couldn't be completed
+
+POST http://127.0.0.1:8000/token/refresh/
+Content-Type: application/json
+
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNzcyNDE3OCwiaWF0IjoxNzI3NjM3Nzc4LCJqdGkiOiIyMzAzZWEyYmYxYzE0ZDU0YjEzMThkZTEzMGJhM2M2ZSIsInVzZXJfaWQiOjN9.nGdNZnnC_zJug0AM3g109bRvTW9bJyHELEDEl23npz4"
+}
+
+### this api uses the user's refresh token and return a new access token
 
 POST http://127.0.0.1:8000/user/sendConfirmationEmail
 Content-Type: application/json
@@ -93,7 +102,7 @@ GET http://127.0.0.1:8000/getLanguage/1
 
 ### ! by default all courses will appear but if specified filtered = True on query the ones with 0 tutors will not be shown
 
-GET http://127.0.0.1:8000/getCourses
+GET http://127.0.0.1:8000/getCourses/
 ### by default the page number will be 1
 
 GET http://127.0.0.1:8000/getCourses?page=2
@@ -119,6 +128,10 @@ GET http://127.0.0.1:8000/getCourses?search_entry=gineering
 ### filtering tutors:
 
 GET http://127.0.0.1:8000/getTutors/
+Content-Type: application/json
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NjY2NDg0LCJpYXQiOjE3Mjc2NTIwODQsImp0aSI6IjQ2OWM4YTlmMzdmNTQzNTk5NTVlMmI0Y2FiNmQwNzgxIiwidXNlcl9pZCI6M30.9ZEJ93oFSf7re4v0iMMfqTPjvG1hPPVT9HUFW3E6ttE
+
+
 ### gets all the tutors without filtering
 
 GET http://127.0.0.1:8000/getTutors/?course_id=2
