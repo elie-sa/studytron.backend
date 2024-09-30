@@ -2,14 +2,13 @@ import re
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from django.http import Http404
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render
-from rest_framework.authtoken.models import Token
 from . import views_scheduling
 from .models import Booking, Course, FileUpload, Language, Major, Rating, Tutor, EmailConfirmationToken, TutorPending
 from django.db.models import Q, Count
@@ -27,6 +26,7 @@ def signup(request):
     serializer = UserSerializer(data=request.data)
     email = request.data.get('email')
     username = request.data.get('username')
+
     if username and User.objects.filter(username=username).exists():
         return Response({'username': 'Username already exists.'}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -61,11 +61,21 @@ def signup(request):
         email_token = EmailConfirmationToken.objects.create(user=user)
         send_confirmation_email(email=user.email, token_id=email_token.pk, user_id=user.pk, access_token=access_token)
 
-        return Response({
+        response = Response({
             'access': access_token,
-            'refresh': str(refresh),
             'user': serializer.data
         }, status=status.HTTP_201_CREATED)
+
+        cookie_max_age = 3600 * 24 * 7  # 7
+        response.set_cookie(
+            'refresh_token',
+            str(refresh),
+            max_age=cookie_max_age,
+            httponly=True,
+            secure=True 
+        )
+
+        return response
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -101,16 +111,32 @@ def login(request):
     if not user.check_password(request.data['password']):
         return Response(f"Invalid {login_kind} or password.", status=status.HTTP_400_BAD_REQUEST)
     
-    refresh =   RefreshToken.for_user(user)
+    refresh = RefreshToken.for_user(user)
     access_token = str(refresh.access_token)
 
-
     serializer = UserSerializer(user)
-    return Response({
+
+    response = Response({
         'access': access_token,
-        'refresh': str(refresh),
         'user': serializer.data
     })
+
+    cookie_max_age = 3600 * 24 * 7  # 7 days
+    response.set_cookie(
+        'refresh_token',
+        str(refresh),
+        max_age=cookie_max_age,
+        httponly=True,
+        secure=True
+    )
+
+    return response
+
+@api_view(['POST'])
+def logout(request):
+    response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+    response.delete_cookie('refresh_token')
+    return response
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])

@@ -18,6 +18,11 @@ Content-Type: application/json
 ### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown
 ### let the user try one or two more confirmations if the first one couldn't be completed
 
+POST http://127.0.0.1:8000/logout
+Content-Type: application/json
+
+### use this api to logout and delete the httpOnly cookie
+
 POST http://127.0.0.1:8000/token/refresh/
 Content-Type: application/json
 
@@ -129,7 +134,7 @@ GET http://127.0.0.1:8000/getCourses?search_entry=gineering
 
 GET http://127.0.0.1:8000/getTutors/
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NjY2NDg0LCJpYXQiOjE3Mjc2NTIwODQsImp0aSI6IjQ2OWM4YTlmMzdmNTQzNTk5NTVlMmI0Y2FiNmQwNzgxIiwidXNlcl9pZCI6M30.9ZEJ93oFSf7re4v0iMMfqTPjvG1hPPVT9HUFW3E6ttE
+Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NzI2NzExLCJpYXQiOjE3Mjc3MTIzMTEsImp0aSI6IjdjMDk5ZTYwZDU2MzQ1ODlhMDU4MmNkOWUxMWU1MGRlIiwidXNlcl9pZCI6M30.iTAedIhdycsdx8Payh6Y3lVdy_23iz-Kk5HhC7T7ou0
 
 
 ### gets all the tutors without filtering
