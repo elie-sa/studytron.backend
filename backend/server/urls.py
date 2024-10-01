@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from . import views, views_scheduling, views_rating, views_payment
+from . import views, views_scheduling, views_rating, views_payment, views_testing
 
 urlpatterns = [
     # authentication apis
@@ -90,4 +90,8 @@ urlpatterns = [
     path('user/uploadProfilePicture', views.upload_profile_picture, name="upload_profile_picture"),
     path('user/getProfilePicture', views.get_profile_picture, name='get_profile_picture'),
     path('user/deleteProfilePicture', views.delete_profile_picture, name="delete_profile_picture"),
+
+    #Testing Apis
+    path('testSuccess', views_testing.test_success_view),
+    path('testFailure', views_testing.test_failure_view),
 ]

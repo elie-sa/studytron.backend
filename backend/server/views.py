@@ -76,6 +76,8 @@ def signup(request):
             str(refresh),
             max_age=cookie_max_age,
             httponly=True,
+            samesite=None,
+            secure=True
         )
 
         return response
@@ -130,6 +132,8 @@ def login(request):
         str(refresh),
         max_age=cookie_max_age,
         httponly=True,
+        samesite=None,
+        secure=True
     )
 
     return response
