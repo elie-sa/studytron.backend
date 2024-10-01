@@ -26,10 +26,6 @@ Content-Type: application/json
 POST http://127.0.0.1:8000/token/refresh/
 Content-Type: application/json
 
-{
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNzcyNDE3OCwiaWF0IjoxNzI3NjM3Nzc4LCJqdGkiOiIyMzAzZWEyYmYxYzE0ZDU0YjEzMThkZTEzMGJhM2M2ZSIsInVzZXJfaWQiOjN9.nGdNZnnC_zJug0AM3g109bRvTW9bJyHELEDEl23npz4"
-}
-
 ### this api uses the user's refresh token and return a new access token
 
 POST http://127.0.0.1:8000/user/sendConfirmationEmail

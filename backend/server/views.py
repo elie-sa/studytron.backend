@@ -18,6 +18,9 @@ from django.template.loader import get_template
 import pyotp
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.paginator import Paginator
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.response import Response
+from .serializers import CookieTokenRefreshSerializer
 
 # authentication apis
 
@@ -137,6 +140,17 @@ def logout(request):
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
     response.delete_cookie('refresh_token')
     return response
+
+class CookieTokenRefreshView(TokenRefreshView):
+    serializer_class = CookieTokenRefreshSerializer
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.data.get('refresh'):
+            cookie_max_age = 3600 * 24 * 7  # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True)
+            del response.data['refresh']
+        
+        return super().finalize_response(request, response, *args, **kwargs)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])

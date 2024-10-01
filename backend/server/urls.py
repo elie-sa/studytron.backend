@@ -10,7 +10,7 @@ urlpatterns = [
     # authentication apis
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/refresh/', views.CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('login', views.login, name="login"),
     path('signup', views.signup, name="signup"),
     path('logout', views.logout, name="logout"),

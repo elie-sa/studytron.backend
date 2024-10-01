@@ -4,7 +4,21 @@ from django.contrib.auth.models import User
 from .models import Booking, Major, Course, Language, Pending, Profile, Rating, Tutor, FileUpload
 from django.utils import timezone 
 from datetime import datetime
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
+class CookieTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+
+    def validate(self, attrs):
+        attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
+        
+        if attrs['refresh'] is None:
+            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+
+        return super().validate(attrs)
+    
 class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileUpload
