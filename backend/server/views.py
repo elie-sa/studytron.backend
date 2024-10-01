@@ -76,7 +76,7 @@ def signup(request):
             str(refresh),
             max_age=cookie_max_age,
             httponly=True,
-            samesite=None,
+            samesite='None',
             secure=True
         )
 
@@ -132,7 +132,7 @@ def login(request):
         str(refresh),
         max_age=cookie_max_age,
         httponly=True,
-        samesite=None,
+        samesite='None',
         secure=True
     )
 
