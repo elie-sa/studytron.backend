@@ -21,6 +21,7 @@ from django.core.paginator import Paginator
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from .serializers import CookieTokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 # authentication apis
 
@@ -75,7 +76,6 @@ def signup(request):
             str(refresh),
             max_age=cookie_max_age,
             httponly=True,
-            secure=True 
         )
 
         return response
@@ -130,7 +130,6 @@ def login(request):
         str(refresh),
         max_age=cookie_max_age,
         httponly=True,
-        secure=True
     )
 
     return response
@@ -144,12 +143,27 @@ def logout(request):
 class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
 
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response({"detail": "No refresh token found in the cookie"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data={'refresh': refresh_token})
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return self.finalize_response(request, Response(serializer.validated_data, status=status.HTTP_200_OK))
+
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get('refresh'):
-            cookie_max_age = 3600 * 24 * 7  # 14 days
+        if 'refresh' in response.data:
+            cookie_max_age = 3600 * 24 * 7  # 7 days
             response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True)
             del response.data['refresh']
-        
+
         return super().finalize_response(request, response, *args, **kwargs)
 
 @api_view(['GET'])
