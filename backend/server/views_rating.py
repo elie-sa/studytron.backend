@@ -6,9 +6,10 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Rating, SpecificRating, Tutor
 from .serializers import RatingSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def rate_tutor(request):
     try:
@@ -56,7 +57,7 @@ def rate_tutor(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_rating(request):
     try:
@@ -95,7 +96,7 @@ def get_tutor_rating(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_user_rating(request):
     tutor_id = request.query_params.get('tutor_id')
