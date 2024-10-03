@@ -825,7 +825,7 @@ def delete_old_profile_picture(user):
         connection_string = f"DefaultEndpointsProtocol=https;AccountName={settings.AZURE_ACCOUNT_NAME};AccountKey={settings.AZURE_ACCOUNT_KEY};EndpointSuffix=core.windows.net"
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
         
-        container_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER)
+        container_client = blob_service_client.get_container_client(settings.AZURE_MEDIA_CONTAINER)
         
         blob_client = container_client.get_blob_client(old_file_path)
 
