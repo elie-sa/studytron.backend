@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 
-@api_view(['POST'])
+@api_view(['GET'])
 def activate_tutor_account(request):
     tutor_id = request.query_params.get('tutor_id')
     subscription_period = request.query_params.get('duration')
