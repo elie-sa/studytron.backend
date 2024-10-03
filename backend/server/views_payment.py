@@ -8,8 +8,8 @@ from django.utils import timezone
 
 @api_view(['POST'])
 def activate_tutor_account(request):
-    tutor_id = request.data.get('tutor_id')
-    subscription_period = request.data.get('duration')
+    tutor_id = request.query_params.get('tutor_id')
+    subscription_period = request.query_params.get('duration')
 
     if not subscription_period or not isinstance(subscription_period, int):
         return Response({"error": "Duration must be a valid integer."}, status=status.HTTP_400_BAD_REQUEST)
