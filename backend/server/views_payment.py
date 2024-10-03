@@ -1,3 +1,4 @@
+from datetime import timedelta
 from .models import Tutor, Subscription
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -11,7 +12,9 @@ def activate_tutor_account(request):
     tutor_id = request.query_params.get('tutor_id')
     subscription_period = request.query_params.get('duration')
 
-    if not subscription_period or not isinstance(subscription_period, int):
+    try:
+        subscription_period = int(subscription_period)
+    except (TypeError, ValueError):
         return Response({"error": "Duration must be a valid integer."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
@@ -23,12 +26,12 @@ def activate_tutor_account(request):
 
     end_year = start_date.year + (start_date.month + subscription_period - 1) // 12
     end_month = (start_date.month + subscription_period - 1) % 12 + 1
-    end_day = start_date.day
-    
+    end_day = min(start_date.day, (timezone.datetime(end_year, end_month, 1) + timedelta(days=31)).replace(day=1).day - 1)
+
     try:
         end_date = start_date.replace(year=end_year, month=end_month, day=end_day)
     except ValueError:
-        end_date = start_date.replace(year=end_year, month=end_month, day=1) + timezone.timedelta(days=-1)
+        end_date = start_date.replace(year=end_year, month=end_month, day=1) + timedelta(days=-1)
 
     Subscription.objects.create(
         tutor=tutor,
