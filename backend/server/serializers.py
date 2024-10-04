@@ -1,7 +1,7 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Booking, Major, Course, Language, Pending, Profile, Rating, Tutor, FileUpload
+from .models import Booking, Major, Course, Language, Pending, Profile, Rating, Subscription, Tutor, FileUpload
 from django.utils import timezone 
 from datetime import datetime
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -163,7 +163,6 @@ class BookingSerializer(serializers.ModelSerializer):
     user_details = serializers.SerializerMethodField()
     course_details = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Booking
         fields = ['id', 'hour', 'user_details', 'course_details', 'day', 'month', 'start_time']
@@ -173,7 +172,7 @@ class BookingSerializer(serializers.ModelSerializer):
         if include_user_details and obj.user:
             return UserSerializer(obj.user).data
         return None
-    
+
     def get_course_details(self, obj):
         if obj.course:
             return CourseSerializer(obj.course).data
@@ -200,15 +199,24 @@ class BookingSerializer(serializers.ModelSerializer):
 
         start_time = timezone.make_aware(start_time, timezone.get_current_timezone())
 
-
         # Check if start_time is in the past
         if start_time < timezone.now():
             raise serializers.ValidationError("Booking time cannot be in the past")
 
+        # Check if the user is a tutor
         tutor = self.context['request'].user.tutorInfo.first()
+        if not tutor:
+            raise serializers.ValidationError("You are not registered as a tutor.")
+
+        subscription = Subscription.objects.filter(tutor=tutor).first()
+        if not subscription:
+            raise serializers.ValidationError("You must have an active subscription to create a booking.")
+
+        if not (subscription.start_date <= start_time <= subscription.end_date):
+            raise serializers.ValidationError("Booking must be within your active subscription period.")
 
         if Booking.objects.filter(tutor=tutor, start_time=start_time).exists():
-            raise serializers.ValidationError("This time slot is already created.")
+            raise serializers.ValidationError("This time slot is already booked.")
 
         data['start_time'] = start_time
         return data
