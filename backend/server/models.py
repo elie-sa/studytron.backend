@@ -43,6 +43,8 @@ class Tutor(models.Model):
     rate = models.PositiveIntegerField(default = 0)
     languages = models.ManyToManyField(Language, blank = True, related_name = "languageTutors")
     bannedProfiles = models.ManyToManyField(User, blank=True, related_name="banningTutors")
+    freeTrialActivated = models.BooleanField(default=False)
+    isActive = models.BooleanField(default=False)
 
     def __str__ (self):
         return f"{self.user.first_name} {self.user.last_name}"

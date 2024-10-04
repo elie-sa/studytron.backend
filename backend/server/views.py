@@ -469,7 +469,7 @@ def list_tutors(request):
 
     tutors = Tutor.objects.filter(query).annotate(
         num_courses=Count("taught_courses")
-    ).filter(num_courses__gt=0).order_by('user__first_name', 'user__last_name')
+    ).filter(num_courses__gt=0, isActive=True).order_by('user__first_name', 'user__last_name')
 
     paginator = Paginator(tutors, items_per_page)
     page_obj = paginator.get_page(page_number)

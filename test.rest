@@ -1,7 +1,7 @@
 POST http://127.0.0.1:8000/signup 
 Content-Type: application/json
 
-{ "username": "elieSawma5", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad5@lau.edu",
+{ "username": "elieSawma6", "first_name": "Elie", "last_name": "Sawma Awad", "password": "TestCase1!89", "email": "elie.sawmaawad6@lau.edu",
 "is_tutor": true, "description": "I am a tutor model for testing", "taughtCourses": [1,2], "rate": 20 ,"languages": [1]}
 
 ### this api endpoint allows for signing users up : if the user already has an account
@@ -12,7 +12,7 @@ Content-Type: application/json
 POST http://127.0.0.1:8000/login 
 Content-Type: application/json
 
-{ "login_credential": "elie.sawmaawad@lau.edu", "password": "TestCase1!89"}
+{ "login_credential": "elie.sawmaawad5@lau.edu", "password": "TestCase1!89"}
 
 ### logging in - provides authorization token
 ### when logging in, if the email isn't confirmed then the user can't login a forbidden status and an error code will be shown
@@ -76,7 +76,7 @@ Authorization: Token d840953867b4826a0972d83d5fb350efdac0d213
 
 GET http://127.0.0.1:8000/user/getInfo
 Content-Type: application/json
-Authorization: Token e6d80a24534358a66df7cbe1220a3955b95d3651
+Authorization: Token yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI4MDU3NzU0LCJpYXQiOjE3MjgwNTY4NTQsImp0aSI6IjYyNjhkYjU2MmE4MzQwYzM5M2EzODkwNWE4ZmZkZDU2IiwidXNlcl9pZCI6Nn0.ykVa634MLTLlOQRZlULkl5Q377wD2Tw_rbgWafQ_Mkw
 ### can provide it with authorization token - provides the user's information and whether he is a tutor or not etc.
 
 ### no need for authentication
@@ -135,7 +135,7 @@ Authorization: Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYW
 
 ### gets all the tutors without filtering
 
-GET http://127.0.0.1:8000/getTutors/?course_id=2
+GET http://127.0.0.1:8000/getTutors/
 ### gets all the tutors who teach course of id 2
 
 GET http://127.0.0.1:8000/getTutors/?search_entry=Elie%20Sawma%20Awad
