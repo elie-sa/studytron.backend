@@ -47,7 +47,15 @@ def activate_tutor_free_trial(request):
 def activate_tutor_account(request):
     tutor_id = request.query_params.get('tutor_id')
     subscription_period = request.query_params.get('duration')
+
+    if not subscription_period:
+        return Response({"error": "Duration parameter is missing."}, status=status.HTTP_400_BAD_REQUEST)
     
+    try:
+        subscription_period = int(subscription_period)
+    except (TypeError, ValueError):
+        return Response({"error": "Duration must be a valid integer."}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
         tutor = Tutor.objects.get(id=tutor_id)
     except Tutor.DoesNotExist:
