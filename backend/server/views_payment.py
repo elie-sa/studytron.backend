@@ -45,7 +45,6 @@ def activate_tutor_free_trial(request):
 
 @api_view(['GET'])
 def activate_tutor_account(request):
-    tutor_id = request.query_params.get('tutor_id')
     subscription_period = request.query_params.get('duration')
 
     if not subscription_period:
@@ -56,13 +55,22 @@ def activate_tutor_account(request):
     except (TypeError, ValueError):
         return Response({"error": "Duration must be a valid integer."}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        tutor = Tutor.objects.get(id=tutor_id)
-    except Tutor.DoesNotExist:
-        return Response({"error": "Tutor id is invalid."}, status=status.HTTP_400_BAD_REQUEST)
+    if request.user.is_authenticated:
+        tutor = request.user.tutorInfo.first()
+        if not tutor:
+            return Response({"error": "Authenticated user does not have tutor information."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        tutor_id = request.query_params.get('tutor_id')
+        if not tutor_id:
+            return Response({"error": "Tutor ID is required when not authenticated."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            tutor = Tutor.objects.get(id=tutor_id)
+        except Tutor.DoesNotExist:
+            return Response({"error": "Tutor id is invalid."}, status=status.HTTP_400_BAD_REQUEST)
 
     start_date = timezone.now()
-    days_to_extend = subscription_period * 30
+    days_to_extend = subscription_period * 30 
 
     existing_subscription = Subscription.objects.filter(tutor=tutor).first()
 
