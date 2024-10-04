@@ -83,6 +83,9 @@ def activate_tutor_account(request):
             end_date=end_date
         )
 
+        tutor.isActive = True
+        tutor.save()
+
         return Response(
             {"message": f"Tutor account activated successfully for {days_to_extend} days."},
             status=status.HTTP_200_OK
