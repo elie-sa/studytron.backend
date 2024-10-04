@@ -27,6 +27,11 @@ def activate_tutor_free_trial(request):
     
     if tutor.freeTrialActivated:
         return Response({"error": "The free trial has already been claimed on this account."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    subsctiption = Subscription.objects.filter(tutor=tutor)
+    if subsctiption:
+        return Response({"error": "Free Trial should be offered before payment activation."}, status=status.HTTP_400_BAD_REQUEST)
+
 
     start_date = timezone.now()
     end_date = start_date + timedelta(weeks=2)  # Set end date to 2 weeks from start date
@@ -45,6 +50,7 @@ def activate_tutor_free_trial(request):
 
 @api_view(['GET'])
 def activate_tutor_account(request):
+    tutor_id = request.query_params.get('tutor_id')
     subscription_period = request.query_params.get('duration')
 
     if not subscription_period:
@@ -55,22 +61,13 @@ def activate_tutor_account(request):
     except (TypeError, ValueError):
         return Response({"error": "Duration must be a valid integer."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.user.is_authenticated:
-        tutor = request.user.tutorInfo.first()
-        if not tutor:
-            return Response({"error": "Authenticated user does not have tutor information."}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        tutor_id = request.query_params.get('tutor_id')
-        if not tutor_id:
-            return Response({"error": "Tutor ID is required when not authenticated."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            tutor = Tutor.objects.get(id=tutor_id)
-        except Tutor.DoesNotExist:
-            return Response({"error": "Tutor id is invalid."}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        tutor = Tutor.objects.get(id=tutor_id)
+    except Tutor.DoesNotExist:
+        return Response({"error": "Tutor id is invalid."}, status=status.HTTP_400_BAD_REQUEST)
 
     start_date = timezone.now()
-    days_to_extend = subscription_period * 30 
+    days_to_extend = subscription_period * 30
 
     existing_subscription = Subscription.objects.filter(tutor=tutor).first()
 
@@ -122,4 +119,4 @@ def get_tutor_activation_status(request):
     except:
         return Response({"error": "The user is not a tutor."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
-    return Response({"isAccountActivated": tutor.isActive, "isTrialActivated": tutor.freeTrialActivated}, status=status.HTTP_200_OK)
+    return Response({"account_is_activated": tutor.isActive, "trial_was_used": tutor.freeTrialActivated}, status=status.HTTP_200_OK)
