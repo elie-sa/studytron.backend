@@ -87,6 +87,7 @@ urlpatterns = [
     path('activateFreeTrial', views_payment.activate_tutor_free_trial, name="activate_tutor_free_trial"),
     path('tutor/getDaysLeft', views_payment.tutor_get_subscription_days, name="tutor_get_subscription_days"),
     path('tutor/getActivationStatus', views_payment.get_tutor_activation_status, name="get_tutor_activation_status"),
+    path('sendPaymentRequest', views_payment.send_payment_request, name="send_payment_request"),
 
     #Profile Pictures
     path('user/uploadProfilePicture', views.upload_profile_picture, name="upload_profile_picture"),

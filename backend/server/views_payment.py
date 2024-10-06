@@ -1,7 +1,6 @@
 from datetime import timedelta
 from .models import Tutor, Subscription
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +14,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Tutor
 from rest_framework.response import Response
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import random
+import requests
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
@@ -120,3 +123,43 @@ def get_tutor_activation_status(request):
         return Response({"error": "The user is not a tutor."}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
     return Response({"account_is_activated": tutor.isActive, "trial_was_used": tutor.freeTrialActivated}, status=status.HTTP_200_OK)
+
+@csrf_exempt
+@api_view(['POST'])
+def send_payment_request(request):
+    invoice = request.data["invoice"]
+    amount = request.data['amount']
+    duration = request.data['duration']
+    tutor_id = request.data['tutor_id']
+    id = f"{tutor_id}512{random.randint(1, 1000)}"
+
+    if request.method == 'POST':
+        url = 'https://lb.sandbox.whish.money/itel-service/api/payment/whish'
+        payload = {
+            'amount': float(amount),
+            'currency': "USD",
+            "invoice": invoice,
+            "externalId": id,
+            "successCallbackUrl": f"https://server.studytron.com/activateAccount?tutor_id={tutor_id}duration={duration}",
+            "failureCallbackUrl": "https://server.studytron.com/testFailure",
+            "successRedirectUrl": "https://studytron.com/#/payment-success",
+            "failureRedirectUrl": "https://studytron.com/#/payment-failure"
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'channel': "10193484",
+            'secret': "dd917d9369864991be5e594cecd2f86d",
+            'websiteurl': "studytron.com"
+        }
+
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            
+            return JsonResponse({
+                'status': 'success',
+                'response': response.json(),
+            }, status=response.status_code)
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'status': 'fail', 'message': 'Invalid request method'}, status=405)
