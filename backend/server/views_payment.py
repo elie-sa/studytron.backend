@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import random
-import requests
+import requests, environ
+from pathlib import Path
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
@@ -124,6 +125,12 @@ def get_tutor_activation_status(request):
     
     return Response({"account_is_activated": tutor.isActive, "trial_was_used": tutor.freeTrialActivated}, status=status.HTTP_200_OK)
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(BASE_DIR / '.env')
+
 @csrf_exempt
 @api_view(['POST'])
 def send_payment_request(request):
@@ -132,6 +139,9 @@ def send_payment_request(request):
     duration = request.data['duration']
     tutor_id = request.data['tutor_id']
     id = f"{tutor_id}512{random.randint(1, 1000)}"
+    WHISH_CHANNEL = env('WHISH_CHANNEL')
+    WHISH_SECRET = env('WHISH_SECRET')
+
 
     if request.method == 'POST':
         url = 'https://lb.sandbox.whish.money/itel-service/api/payment/whish'
@@ -147,8 +157,8 @@ def send_payment_request(request):
         }
         headers = {
             'Content-Type': 'application/json',
-            'channel': "10193484",
-            'secret': "dd917d9369864991be5e594cecd2f86d",
+            'channel': WHISH_CHANNEL,
+            'secret': WHISH_SECRET,
             'websiteurl': "studytron.com"
         }
 
