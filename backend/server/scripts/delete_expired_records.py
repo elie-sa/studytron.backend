@@ -2,14 +2,13 @@ import os
 import sys
 from django.utils import timezone
 
-# Add your Django project to the Python path
-sys.path.append('/home/studytronadmin/studytron.backend/backend')  # Adjust the path to your username and project name
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")  # Change to your actual settings module
+sys.path.append('/home/studytronadmin/studytron.backend/backend')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 
 import django
 django.setup()
 
-from server.models import Booking, Subscription  # Change 'your_app' to your actual app name
+from server.models import Booking, Subscription 
 
 def delete_expired_bookings():
     now = timezone.now()

@@ -11,7 +11,7 @@ Session Details:
 - Scheduled Time: {{ session_time }}
 
 To confirm this booking, please click the link below:
-[Confirm Booking](http://localhost:8000/tutor/confirmBooking?booking_id={{booking_id}}&user_id={{user_id}}&course_id={{course_id}}&token_id={{token_id}})
+[Confirm Booking](https://server.studytron/tutor/confirmBooking?booking_id={{booking_id}}&user_id={{user_id}}&course_id={{course_id}}&token_id={{token_id}})
 
 Thank you!
 
