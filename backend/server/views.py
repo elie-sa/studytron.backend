@@ -129,14 +129,13 @@ def login(request):
 
 @api_view(['POST'])
 def logout(request):
+    if request.session.exists(request.session.session_key):
+        request.session.flush()
+
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
-    
-    response.delete_cookie(
-        'refresh_token', 
-        path='/',
-        domain=None
-    )
-    
+
+    response.delete_cookie('refresh_token', path='/')
+
     return response
 
 class CookieTokenRefreshView(TokenRefreshView):
