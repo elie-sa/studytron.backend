@@ -130,12 +130,13 @@ def login(request):
 @api_view(['POST'])
 def logout(request):
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+    
     response.delete_cookie(
         'refresh_token', 
-        path='/', 
-        secure=True, 
-        httponly=True
+        path='/',
+        domain=None
     )
+    
     return response
 
 class CookieTokenRefreshView(TokenRefreshView):
