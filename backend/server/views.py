@@ -208,6 +208,9 @@ def send_confirmation_email(email, token_id, user_id, access_token):
         fail_silently=True
     )
     
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt    
 def confirm_email_view(request):
     token_id = request.GET.get('token_id', None)
     auth_token = request.GET.get('auth_token', None) 
