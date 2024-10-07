@@ -25,7 +25,6 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.views.decorators.csrf import csrf_exempt
 
 # authentication apis
-@csrf_exempt
 @api_view(['POST'])
 def signup(request):
     serializer = UserSerializer(data=request.data)
@@ -75,7 +74,6 @@ def signup(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
 @api_view(['POST'])
 def login(request):
     login_credential = request.data["login_credential"].strip()
@@ -131,13 +129,8 @@ def login(request):
 
 @api_view(['POST'])
 def logout(request):
-    if request.session.exists(request.session.session_key):
-        request.session.flush()
-
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
-
     response.delete_cookie('refresh_token', path='/')
-
     return response
 
 class CookieTokenRefreshView(TokenRefreshView):
