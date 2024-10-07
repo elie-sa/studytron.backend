@@ -70,15 +70,6 @@ def signup(request):
             'user': serializer.data
         }, status=status.HTTP_201_CREATED)
 
-        cookie_max_age = 3600 * 24 * 7  # 7
-        response.set_cookie(
-            'refresh_token',
-            str(refresh),
-            max_age=cookie_max_age,
-            httponly=True,
-            secure=True
-        )
-
         return response
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
