@@ -210,7 +210,7 @@ def send_confirmation_email(email, token_id, user_id, access_token):
     
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt    
+"""@csrf_exempt    
 def confirm_email_view(request):
     token_id = request.GET.get('token_id', None)
     auth_token = request.GET.get('auth_token', None) 
@@ -228,7 +228,39 @@ def confirm_email_view(request):
         return render(request, template_name='users/confirm_email_view.html', context=data)    
     except EmailConfirmationToken.DoesNotExist:
         data = {'is_email_confirmed': False, 'token': auth_token}
-        return render(request, template_name='users/confirm_email_view.html', context=data)
+        return render(request, template_name='users/confirm_email_view.html', context=data)"""
+
+from django.http import HttpResponse
+from django.template import loader
+from django.views.decorators.csrf import csrf_exempt
+
+def confirm_email_view(request):
+    token_id = request.GET.get('token_id', None)
+    auth_token = request.GET.get('auth_token', None)
+
+    # Prepare the context
+    context = {'token': auth_token}
+
+    try:
+        token = EmailConfirmationToken.objects.get(pk=token_id)
+        user = token.user
+        profile = user.profile
+        profile.is_confirmed = True
+        profile.save()
+        token.delete()
+
+        # Load and render the template manually
+        template = loader.get_template('users/confirm_email_view.html')
+        context['is_email_confirmed'] = True
+        response_content = template.render(context)
+        return HttpResponse(response_content)
+
+    except EmailConfirmationToken.DoesNotExist:
+        # Load and render the template with failure context
+        template = loader.get_template('users/confirm_email_view.html')
+        context['is_email_confirmed'] = False
+        response_content = template.render(context)
+        return HttpResponse(response_content)
 
 @api_view(['POST'])
 def check_email(request):
