@@ -133,8 +133,6 @@ def logout(request):
     response.delete_cookie(
         'refresh_token', 
         path='/', 
-        domain=None,
-        samesite=None,
         secure=True, 
         httponly=True
     )
