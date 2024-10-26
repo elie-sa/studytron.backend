@@ -199,7 +199,7 @@ def send_confirmation_email(email, token_id, user_id, access_token):
         subject='Please confirm your email',
         message=message,
         recipient_list=[email],
-        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        from_email="no-reply@studytron.com",
         fail_silently=True
     )
   
@@ -247,7 +247,7 @@ def send_otp(user):
     send_mail(
         'Your OTP Code',
         f'Your OTP code is {otp}. It is valid for the next minute.',
-        "studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        "no-reply@studytron.com",
         [user.email],
         fail_silently=False,
     )
@@ -673,7 +673,7 @@ def contact_us(request):
     send_mail(
         subject=f"Contact Us Form Submission: {subject}",
         message=message,
-        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        from_email="no-reply@studytron.com",
         recipient_list=["studytron01@gmail.com"],
         fail_silently=False,
     )
@@ -736,7 +736,7 @@ def send_pending_cancellation_emails(request, pending_bookings, tutor_name):
         send_mail(
             subject='Cancellation of Your Pending Booking Request',
             message=message,
-            from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+            from_email="no-reply@studytron.com",
             recipient_list=[user.email],
             fail_silently=True
         )

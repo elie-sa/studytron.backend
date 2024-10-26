@@ -117,7 +117,7 @@ def send_confirmation_email(user_id, student_name, student_email, tutor_email, c
         subject='Booking Confirmation Request',
         message=message,
         recipient_list=[tutor_email],
-        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        from_email="no-reply@studytron.com",
         fail_silently=True
     )
 
@@ -188,7 +188,7 @@ def confirm_booking(request):
     send_mail(
         subject='Booking Confirmation',
         message=message,
-        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        from_email="no-reply@studytron.com",
         recipient_list=[user.email],
         fail_silently=True
     )
@@ -587,7 +587,7 @@ def cancel_my_booking(request):
         send_mail(
             subject='Booking Cancellation Notification',
             message=message,
-            from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+            from_email="no-reply@studytron.com",
             recipient_list=[tutor_email],
             fail_silently=True
         )
@@ -686,7 +686,7 @@ def send_booking_cancellation_email(request, booking):
     send_mail(
         subject='Booking Cancellation Notification',
         message=message,
-        from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+        from_email="no-reply@studytron.com",
         recipient_list=[tutor_email],
         fail_silently=True
     )
@@ -718,7 +718,7 @@ def send_pending_cancellation_emails(request, pending_bookings, booking):
         send_mail(
             subject='Cancellation of Your Pending Booking Request',
             message=message,
-            from_email="studytron@trial-0r83ql3dvxpgzw1j.mlsender.net",
+            from_email="no-reply@studytron.com",
             recipient_list=[user.email],
             fail_silently=True
         )
